@@ -1,32 +1,64 @@
 <template>
-  <div id="app">
-    <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div>
-    <router-view/>
+  <div id="nav">
+    <a-spin tip="Loading..." :spinning="spinning">
+      <pageContainerBox :config="{ width: 1920, height: 1080, isfix: false }">
+        <pageCommonHeader></pageCommonHeader>
+        <router-view class="router-page" />
+      </pageContainerBox>
+    </a-spin>
   </div>
 </template>
-
+<script>
+import pageContainerBox from './components/pageContainerBox.vue'
+import pageCommonHeader from './components/pageCommonHeader.vue'
+export default {
+  name: 'app',
+  components: {
+    pageContainerBox,
+    pageCommonHeader
+  },
+  data() {
+    return {
+      spinning: false
+    }
+  }
+}
+</script>
 <style lang="scss">
+html,
+body {
+  height: 100%;
+}
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+  height: 100%;
+  color: #fff;
+  //   background-image: url('./assets/page_back_hd.jpg');
+  //   background-repeat: no-repeat;
+  //   background-size: cover;
 }
-
 #nav {
-  padding: 30px;
-
-  a {
-    font-weight: bold;
-    color: #2c3e50;
-
-    &.router-link-exact-active {
-      color: #42b983;
-    }
+  height: 100%;
+  img.bk {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: -1;
+  }
+  .ant-spin-nested-loading {
+    height: 100%;
+    background-color: rgb(0, 0, 0);
+    // .ant-spin {
+    //   background-color: rgba(0, 0, 0, 0.774);
+    // }
+  }
+  .router-page {
+    height: 990px;
+    margin: 35px 30px 25px 30px;
   }
 }
 </style>

@@ -1,11 +1,11 @@
-const path = require("path");
+const path = require('path')
 // import path = require('path')
 // const resolve = dir => path.join(__dirname, dir);
 
 // console.log(process.env.NODE_ENV)
 module.exports = {
   //   publicPath: process.env.NODE_ENV === 'production' ? '/robot/dist/' : '',
-  publicPath: process.env.NODE_ENV === "production" ? "./" : "",
+  publicPath: process.env.NODE_ENV === 'production' ? './' : '',
   css: {
     // 是否开启 CSS source maps
     sourceMap: true,
@@ -26,42 +26,42 @@ module.exports = {
       }
     }
   },
-  chainWebpack: config => {
+  chainWebpack: (config) => {
     // 修复HMR
-    config.resolve.symlinks(true);
+    config.resolve.symlinks(true)
     // vue默认@指向src目录
-    config.resolve.alias.set("@", path.resolve("src"));
+    config.resolve.alias.set('@', path.resolve('src'))
   },
   devServer: {
     compress: true,
     // hot: true,
-    host: "0.0.0.0",
+    host: '0.0.0.0',
     port: 9002,
     proxy: {
-      "/login": {
-        target: "http://192.168.1.167:8750/",
+      '/login': {
+        target: 'http://192.168.1.167:8750/',
         changeOrigin: true,
         secure: false
         // pathRewrite: { '^/cpms/mnpl': '' }
       },
-      "/channelBigScreen/": {
-        target: "http://192.168.1.167:8750/",
+      '/channelBigScreen/': {
+        target: 'http://192.168.1.167:8750/',
         changeOrigin: true,
         secure: false
         // pathRewrite: { '^/cpms/mnpl': '' }
       },
-      "/bigScreen/": {
-        target: "http://192.168.1.167:8750/",
+      '/bigScreen/': {
+        target: 'http://192.168.1.167:8750/',
         changeOrigin: true,
         secure: false
         // pathRewrite: { '^/cpms/mnpl': '' }
       },
-      "/channel/": {
-        target: "http://192.168.1.167:8750/",
+      '/channel/': {
+        target: 'http://192.168.1.167:8750/',
         changeOrigin: true,
         secure: false
         // pathRewrite: { '^/cpms/mnpl': '' }
       }
     }
   }
-};
+}
