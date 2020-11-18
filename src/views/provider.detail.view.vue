@@ -40,6 +40,13 @@
 </template>
 
 <script>
+//取供应商接口
+const getProvider = '/bigScreen/guiz/supplierIndexData/supplierList'
+//取图形的指标接口，图形编码从上到下，从左到右0101，0102（总览图：01，重点图：02，详情图：03）
+const getEncode = '/bigScreen/guiz/supplierIndexData/indexGroups'
+//取指标值的接口
+const encodeUrl = '/bigScreen/guiz/supplierIndexData/indexValues'
+import { getDatesParams, getDatesParamsNew } from '../utils/commFun'
 export default {
   data() {
     return {

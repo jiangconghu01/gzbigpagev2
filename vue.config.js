@@ -3,6 +3,7 @@ const path = require('path')
 // const resolve = dir => path.join(__dirname, dir);
 
 // console.log(process.env.NODE_ENV)
+const proxyUrl = 'http://192.168.1.167:8750/'
 module.exports = {
   //   publicPath: process.env.NODE_ENV === 'production' ? '/robot/dist/' : '',
   publicPath: process.env.NODE_ENV === 'production' ? './' : '',
@@ -39,25 +40,25 @@ module.exports = {
     port: 9002,
     proxy: {
       '/login': {
-        target: 'http://192.168.1.167:8750/',
+        target: proxyUrl,
         changeOrigin: true,
         secure: false
         // pathRewrite: { '^/cpms/mnpl': '' }
       },
       '/channelBigScreen/': {
-        target: 'http://192.168.1.167:8750/',
+        target: proxyUrl,
         changeOrigin: true,
         secure: false
         // pathRewrite: { '^/cpms/mnpl': '' }
       },
       '/bigScreen/': {
-        target: 'http://192.168.1.167:8750/',
+        target: proxyUrl,
         changeOrigin: true,
         secure: false
         // pathRewrite: { '^/cpms/mnpl': '' }
       },
       '/channel/': {
-        target: 'http://192.168.1.167:8750/',
+        target: proxyUrl,
         changeOrigin: true,
         secure: false
         // pathRewrite: { '^/cpms/mnpl': '' }

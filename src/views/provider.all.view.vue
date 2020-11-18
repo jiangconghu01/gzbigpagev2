@@ -85,26 +85,81 @@
 </template>
 
 <script>
+const typeMap = {
+  all: '00',
+  asset: '01',
+  cost: '02',
+  income: '03',
+  other: '04'
+}
+//取图形的指标接口，图形编码从上到下，从左到右
+const getEncode = '/channelBigScreen/modInfoList'
+//取指标值的接口
+const encodeUrl = '/channelBigScreen/modIdxVOList'
+import { getDatesParams, getDatesParamsNew } from '../utils/commFun'
+import leftop_config from '../chartconfig/providerAllView/left.top.pie'
 export default {
   data() {
     return {
-      labelItems: []
+      labelItems: [],
+      encodeList: []
     }
   },
   created() {},
   components: {},
   computed: {},
   methods: {
+    inintPage() {
+      const businesstype = window.sessionStorage.getItem('buniessType')
+      this.$http
+        .post(getEncode, { viewCode: '2002', chnlType: typeMap[businesstype] })
+        .then((res) => {
+          this.encodeList = res.data
+          this.updatePage()
+        })
+        .catch((e) => {
+          this.$message.error('指标加载失败！')
+        })
+    },
+    updatePage() {
+      const date = window.sessionStorage.getItem('selectDate')
+      const citycode = window.sessionStorage.getItem('cityCode')
+      const businesstype = window.sessionStorage.getItem('buniessType')
+      this.lefttopchart(date, citycode, businesstype)
+    },
+    //left-top图表请求数据逻辑
+    lefttopchart(date, citycode, businesstype) {
+      const encondelefttop = this.encodeList[0].idxs.map((ele) => ele.idxCde)
+      const chartCode = this.encodeList[0].chartCode
+      const paramLeftTop = JSON.parse(getDatesParams([date], [citycode], encondelefttop, businesstype, chartCode))
+      this.$http
+        .post(encodeUrl, paramLeftTop)
+        .then((res) => {
+          const label = ['成本类', '工程采购类', '合作分成类', '其他']
+          leftop_config.series[0].data = res.data.map((val, index) => {
+            return {
+              name: val.idxName,
+              value: val.idxValue
+            }
+          })
+          const box = this.$echarts.init(document.getElementById('all-view-left-top'))
+          box.setOption(leftop_config)
+        })
+        .catch((e) => {
+          console.log(e)
+        })
+    },
     showModalTable(param) {
       console.log(param)
     },
     toKeyPointPage() {
-      //   this.$router.push({ name: 'keypointview' })
       const { href } = this.$router.resolve({ name: 'keypointview' })
       window.open(href, '_blank')
     }
   },
-  mounted() {}
+  mounted() {
+    this.inintPage()
+  }
 }
 // import userModalTable from '../components/allview/userModalTable.vue'
 // import { defineComponent, ref, onMounted, getCurrentInstance, ComponentInternalInstance, computed, watch } from 'vue'
