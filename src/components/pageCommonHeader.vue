@@ -68,7 +68,8 @@ export default {
     },
     handleDateChange(val) {
       console.log(val)
-      this.setSelectDate(val)
+      const sdate = val.format('YYYY-MM')
+      this.setSelectDate(sdate)
     },
     handleCityChange(val) {
       console.log(val)

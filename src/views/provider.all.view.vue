@@ -114,7 +114,9 @@ export default {
       this.$http
         .post(getEncode, { viewCode: '2002', chnlType: typeMap[businesstype] })
         .then((res) => {
+          console.log(res)
           this.encodeList = res.data
+          debugger
           this.updatePage()
         })
         .catch((e) => {

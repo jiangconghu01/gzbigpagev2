@@ -83,22 +83,20 @@ export default {
           //纵坐标数据
           config.yAxis.data = providerListRqu
           //列账金额
-          const series1 = resData.data
-          const series1Data = series1.data.filter((val) => val.idxCode === 'ZDGYS_0001')
+          const series = resData
+          const series1Data = series.data.filter((val) => val.idxCode === 'ZDGYS_0001')
           config.series[0].data = series1Data.map((val) => {
             val.name = val.gysjc
             val.value = val.idxValue
             return val
           })
-          const series2 = resData.data
-          const series2Data = series2.data.filter((val) => val.idxCode === 'ZDGYS_0002')
+          const series2Data = series.data.filter((val) => val.idxCode === 'ZDGYS_0002')
           config.series[1].data = series2Data.map((val) => {
             val.name = val.gysjc
             val.value = val.idxValue
             return val
           })
-          const series3 = resData.data
-          const series3Data = series3.data.filter((val) => val.idxCode === 'ZDGYS_0003')
+          const series3Data = series.data.filter((val) => val.idxCode === 'ZDGYS_0003')
           config.series[2].data = series3Data.map((val) => {
             val.name = val.gysjc
             val.value = val.idxValue
@@ -112,7 +110,9 @@ export default {
         })
     }
   },
-  mounted() {}
+  mounted() {
+    this.initPage()
+  }
 }
 </script>
 <style lang="scss" scoped>
