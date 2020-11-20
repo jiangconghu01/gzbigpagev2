@@ -8,7 +8,7 @@ const option = {
         color: '#96B2CC'
       }
     },
-    formatter: function(param: any) {
+    formatter: function(param) {
       console.log(param)
       return `<div class="test_triangle_border">
          <div class="popup">

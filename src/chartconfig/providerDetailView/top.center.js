@@ -74,7 +74,7 @@ const option = {
         show: true,
         color: '#3888CB',
         distance: -20,
-        formatter: function(v: any) {
+        formatter: function(v) {
           switch (v + '') {
             case '0':
               return '0'
@@ -142,7 +142,7 @@ const option = {
           },
           label: {
             normal: {
-              formatter: function(params: any) {
+              formatter: function(params) {
                 return params.value
               },
               color: '#FFFFFF',

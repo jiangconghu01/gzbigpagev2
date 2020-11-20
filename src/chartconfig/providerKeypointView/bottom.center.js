@@ -89,7 +89,7 @@ const option = {
         normal: {
           show: true,
           position: 'inside',
-          formatter: function(p: any) {
+          formatter: function(p) {
             return p.value > 0 ? p.value : ''
           },
           textStyle: {
@@ -110,7 +110,7 @@ const option = {
         normal: {
           show: true,
           position: 'inside',
-          formatter: function(p: any) {
+          formatter: function(p) {
             return p.value > 0 ? p.value : ''
           },
           textStyle: {
@@ -131,7 +131,7 @@ const option = {
         normal: {
           show: true,
           position: 'inside',
-          formatter: function(p: any) {
+          formatter: function(p) {
             return p.value > 0 ? p.value : ''
           },
           textStyle: {
@@ -152,7 +152,7 @@ const option = {
         normal: {
           show: true,
           position: 'inside',
-          formatter: function(p: any) {
+          formatter: function(p) {
             return p.value > 0 ? p.value : ''
           },
           textStyle: {
@@ -173,7 +173,7 @@ const option = {
         normal: {
           show: true,
           position: 'inside',
-          formatter: function(p: any) {
+          formatter: function(p) {
             return p.value > 0 ? p.value : ''
           },
           textStyle: {
@@ -194,7 +194,7 @@ const option = {
         normal: {
           show: true,
           position: 'inside',
-          formatter: function(p: any) {
+          formatter: function(p) {
             return p.value > 0 ? p.value : ''
           },
           textStyle: {
@@ -215,7 +215,7 @@ const option = {
         normal: {
           show: true,
           position: 'inside',
-          formatter: function(p: any) {
+          formatter: function(p) {
             return p.value > 0 ? p.value : ''
           },
           textStyle: {
@@ -236,7 +236,7 @@ const option = {
         normal: {
           show: true,
           position: 'inside',
-          formatter: function(p: any) {
+          formatter: function(p) {
             return p.value > 0 ? p.value : ''
           },
           textStyle: {
@@ -257,7 +257,7 @@ const option = {
         normal: {
           show: true,
           position: 'inside',
-          formatter: function(p: any) {
+          formatter: function(p) {
             return p.value > 0 ? p.value : ''
           },
           textStyle: {
@@ -278,7 +278,7 @@ const option = {
         normal: {
           show: true,
           position: 'inside',
-          formatter: function(p: any) {
+          formatter: function(p) {
             return p.value > 0 ? p.value : ''
           },
           textStyle: {

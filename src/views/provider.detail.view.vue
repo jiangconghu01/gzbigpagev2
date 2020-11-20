@@ -47,6 +47,11 @@ const getEncode = '/bigScreen/guiz/supplierIndexData/indexGroups'
 //取指标值的接口
 const encodeUrl = '/bigScreen/guiz/supplierIndexData/indexValues'
 import { getDatesParams, getDatesParamsNew } from '../utils/commFun'
+import leftop_config from '../chartconfig/providerDetailView/top.left'
+import centertop_config from '../chartconfig/providerDetailView/top.center'
+import rightop_config from '../chartconfig/providerDetailView/top.right'
+import leftbottom_config from '../chartconfig/providerDetailView/bottom.left'
+import rightbottom_config from '../chartconfig/providerDetailView/bottom.right'
 export default {
   data() {
     return {
@@ -59,6 +64,70 @@ export default {
   methods: {
     showModalTable(param) {
       console.log(param)
+    },
+    async initPage() {
+      const date = window.sessionStorage.getItem('selectDate')
+      const citycode = window.sessionStorage.getItem('cityCode')
+      const businesstype = window.sessionStorage.getItem('buniessType')
+      const providerList = await this.$http.post(getProvider, { accountCode: citycode, monthId: date, ywlx: businesstype })
+      if (!(providerList.data && providerList.data.length > 0)) {
+        this.$message.error('本月暂无供应商！')
+        return
+      }
+      this.providerList = providerList.data
+      this.updatePage()
+    },
+
+    updatePage() {
+      const date = window.sessionStorage.getItem('selectDate')
+      const citycode = window.sessionStorage.getItem('cityCode')
+      const businesstype = window.sessionStorage.getItem('buniessType')
+      this.lefttopchart(date, citycode, businesstype)
+      this.centertopchart(date, citycode, businesstype)
+      this.righttopchart(date, citycode, businesstype)
+      this.leftbottomchart(date, citycode, businesstype)
+      this.rightbottomchart(date, citycode, businesstype)
+    },
+    async lefttopchart(date, citycode, businesstype) {
+      const encodes = await this.$http.post(getEncode, { idxGroup: '0301' })
+      //left-top图表请求参数
+      const providerListRqu = this.providerList.map((ele) => ele.gysbm)
+      const encodetopleft = encodes.data.map((v) => v.idxCde)
+      const p = getDatesParamsNew([date], [citycode], encodetopleft, providerListRqu, businesstype)
+      const leftTopParam = JSON.parse(p)
+      this.$http
+        .post(encodeUrl, leftTopParam)
+        .then((resData) => {
+          const providerListRqu = this.providerList.map((ele) => ele.gysjc)
+          const config = leftop_config
+          //纵坐标数据
+          config.yAxis.data = providerListRqu
+          //列账金额
+          const series = resData
+          const series1Data = series.data.filter((val) => val.idxCode === 'ZDGYS_0001')
+          config.series[0].data = series1Data.map((val) => {
+            val.name = val.gysjc
+            val.value = val.idxValue
+            return val
+          })
+          const series2Data = series.data.filter((val) => val.idxCode === 'ZDGYS_0002')
+          config.series[1].data = series2Data.map((val) => {
+            val.name = val.gysjc
+            val.value = val.idxValue
+            return val
+          })
+          const series3Data = series.data.filter((val) => val.idxCode === 'ZDGYS_0003')
+          config.series[2].data = series3Data.map((val) => {
+            val.name = val.gysjc
+            val.value = val.idxValue
+            return val
+          })
+          const box = this.$echarts.init(document.getElementById('keypoint-view-top-left'))
+          box.setOption(config)
+        })
+        .catch((e) => {
+          console.log(e)
+        })
     }
   },
   mounted() {}
