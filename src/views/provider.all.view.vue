@@ -96,7 +96,7 @@ const typeMap = {
 const getEncode = '/channelBigScreen/modInfoList'
 //取指标值的接口
 const encodeUrl = '/channelBigScreen/modIdxVOList'
-import { getDatesParams, getDatesParamsNew } from '../utils/commFun'
+import { getDatesParams } from '../utils/commFun'
 
 import { GZProvinceCityItem, GZProvinceCityEnum } from '../chartconfig/static'
 import { indexdata } from '../chartconfig/static'

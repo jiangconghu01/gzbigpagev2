@@ -52,7 +52,7 @@ export default {
       //   defCity: window.sessionStorage.getItem('cityCode'),
       defType: window.sessionStorage.getItem('buniessType'),
       citycode: window.sessionStorage.getItem('cityCode'),
-      storePage: 'allview',
+      storePage: this.$route.name,
       dateFmater: 'YYYY-MM',
       cityList: GZProvinceCityItem,
       zhLocale: locale,

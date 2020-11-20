@@ -18,7 +18,8 @@ const option = {
     data: ['公开招标', '公开竞争性谈判', '公开比选', '单一来源采购(公示)', '单一来源采购(非公示)']
   },
   grid: {
-    top: 160,
+    top: 130,
+    left: '5%',
     bottom: '3%',
     containLabel: true
   },

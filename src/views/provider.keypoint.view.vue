@@ -8,7 +8,7 @@
       </div>
       <div class="top-right frame-back-box">
         <h2 class="chart-title">信用信息分布情况统计图</h2>
-        <div class="chart-unit-text">单位：万元</div>
+        <div class="chart-unit-text">单位：个</div>
         <div class="chart-box" id="keypoint-view-top-right"></div>
       </div>
     </div>
@@ -32,6 +32,13 @@
 </template>
 
 <script>
+const typeMap = {
+  all: '00',
+  asset: '01',
+  cost: '02',
+  income: '03',
+  other: '04'
+}
 //取供应商接口
 const getProvider = '/bigScreen/guiz/supplierIndexData/supplierList'
 //取图形的指标接口，图形编码从上到下，从左到右0101，0102（总览图：01，重点图：02，详情图：03）
@@ -41,8 +48,10 @@ const encodeUrl = '/bigScreen/guiz/supplierIndexData/indexValues'
 import { getDatesParams, getDatesParamsNew } from '../utils/commFun'
 import leftop_config from '../chartconfig/providerKeypointView/top.left'
 import rightop_config from '../chartconfig/providerKeypointView/top.right.bar'
+import bottomleft_config from '../chartconfig/providerKeypointView/bottom.left'
 import centerbottom_config from '../chartconfig/providerKeypointView/bottom.center'
 import rightbottom_config from '../chartconfig/providerKeypointView/bottom.right'
+import { mapGetters, mapMutations } from 'vuex'
 export default {
   data() {
     return {
@@ -51,8 +60,11 @@ export default {
   },
   created() {},
   components: {},
-  computed: {},
+  computed: {
+    ...mapGetters(['getCityCode', 'getSelectDate', 'getBuniessType'])
+  },
   methods: {
+    ...mapMutations(['setKeypointProvider']),
     async initPage() {
       const date = window.sessionStorage.getItem('selectDate')
       const citycode = window.sessionStorage.getItem('cityCode')
@@ -72,8 +84,28 @@ export default {
       const businesstype = window.sessionStorage.getItem('buniessType')
       this.lefttopchart(date, citycode, businesstype)
       this.righttopchart(date, citycode, businesstype)
+      this.leftbottomchart(date, citycode, businesstype)
       this.centerbottomchart(date, citycode, businesstype)
       this.rightbottomchart(date, citycode, businesstype)
+    },
+    //bottom-left图表用第一套接口查数据
+    async leftbottomchart(date, citycode, businesstype) {
+      this.$http.post('/channelBigScreen/modInfoList', { viewCode: '2002', chnlType: typeMap[businesstype] }).then((res) => {
+        const update2pie = res.data[0].idxs.map((ele) => ele.idxCde)
+        const chartCode = res.data[0].chartCode
+        const update2pieParam = JSON.parse(getDatesParams([date], [citycode], update2pie, businesstype, chartCode))
+        this.$http.post('/channelBigScreen/modIdxVOList', update2pieParam).then((resData) => {
+          const label = ['房地产', '汽车', '通讯设备', '土木工程', '软件和技术服务', '批发']
+          bottomleft_config.series[0].data = resData.data.map((val, index) => {
+            return {
+              name: label[index],
+              value: val.idxValue
+            }
+          })
+          const box = this.$echarts.init(document.getElementById('keypoint-view-bottom-left'))
+          box.setOption(bottomleft_config)
+        })
+      })
     },
     async lefttopchart(date, citycode, businesstype) {
       const encodes = await this.$http.post(getEncode, { idxGroup: '0201' })
@@ -94,28 +126,24 @@ export default {
           const series1Data = series.data.filter((val) => val.idxCode === 'ZDGYS_0001')
           config.series[0].data = series1Data.map((val) => {
             val.name = val.gysjc
-            val.value = val.idxValue
+            val.value = (Number(val.idxValue) / 10000).toFixed(2)
             return val
           })
           const series2Data = series.data.filter((val) => val.idxCode === 'ZDGYS_0002')
           config.series[1].data = series2Data.map((val) => {
             val.name = val.gysjc
-            val.value = val.idxValue
+            val.value = (Number(val.idxValue) / 10000).toFixed(2)
             return val
           })
           const series3Data = series.data.filter((val) => val.idxCode === 'ZDGYS_0003')
           config.series[2].data = series3Data.map((val) => {
             val.name = val.gysjc
-            val.value = val.idxValue
+            val.value = (Number(val.idxValue) / 10000).toFixed(2)
             return val
           })
           const box = this.$echarts.init(document.getElementById('keypoint-view-top-left'))
           box.setOption(config)
-          box.off('click')
-          box.on('click', 'yAxis.category', function(params) {
-            console.log(params)
-            // store.commit('setKeypointProvider', { gysjc: params.value })
-          })
+          this.handleChartClick(box, 'yAxis.category')
         })
         .catch((e) => {
           console.log(e)
@@ -158,6 +186,7 @@ export default {
           })
           const box = this.$echarts.init(document.getElementById('keypoint-view-top-right'))
           box.setOption(config)
+          this.handleChartClick(box)
         })
         .catch((e) => {
           console.log(e)
@@ -235,6 +264,7 @@ export default {
           })
           const box = this.$echarts.init(document.getElementById('keypoint-view-bottom-center'))
           box.setOption(config)
+          this.handleChartClick(box)
         })
         .catch((e) => {
           console.log(e)
@@ -259,19 +289,19 @@ export default {
           const series1Data = series.data.filter((val) => val.idxCode === 'ZDGYS_0017')
           config.series[0].data = series1Data.map((val) => {
             val.name = val.gysjc
-            val.value = val.idxValue
+            val.value = (Number(val.idxValue) / 10000).toFixed(2)
             return val
           })
           const series2Data = series.data.filter((val) => val.idxCode === 'ZDGYS_0018')
           config.series[1].data = series2Data.map((val) => {
             val.name = val.gysjc
-            val.value = val.idxValue
+            val.value = (Number(val.idxValue) / 10000).toFixed(2)
             return val
           })
           const series3Data = series.data.filter((val) => val.idxCode === 'ZDGYS_0019')
           config.series[2].data = series3Data.map((val) => {
             val.name = val.gysjc
-            val.value = val.idxValue
+            val.value = (Number(val.idxValue) / 10000).toFixed(2)
             return val
           })
           const box = this.$echarts.init(document.getElementById('keypoint-view-bottom-right'))
@@ -281,10 +311,31 @@ export default {
           console.log(e)
         })
     },
-
+    handleChartClick(box, type) {
+      const target = type || 'xAxis.category'
+      const _this = this
+      box.off('click')
+      box.on('click', target, function(params) {
+        const t = _this.providerList.filter((ele) => ele.gysjc === params.value)
+        const provider = t[0] ? t[0] : {}
+        _this.setKeypointProvider(provider)
+        _this.toDetailPage()
+      })
+    },
     toDetailPage() {
       const { href } = this.$router.resolve({ name: 'detailview' })
       window.open(href, '_blank')
+    }
+  },
+  watch: {
+    getCityCode(nv, ov) {
+      this.updatePage()
+    },
+    getSelectDate(nv, ov) {
+      this.updatePage()
+    },
+    getBuniessType(nv, ov) {
+      this.updatePage()
     }
   },
   mounted() {

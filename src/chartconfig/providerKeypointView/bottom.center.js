@@ -21,13 +21,14 @@ const option = {
   grid: {
     left: '3%',
     right: '4%',
-    bottom: '3%',
+    bottom: 10,
     containLabel: true
   },
   xAxis: {
     triggerEvent: true,
     axisLabel: {
       interval: 0, //强制显示文字
+      rotate: 30,
       color: '#398FD1',
       fontSize: 16
     },
@@ -78,7 +79,7 @@ const option = {
       }
     }
   ],
-  color: ['#16D4D2', '#F2DA32', '#58ABF1', '#6A50FF', '#D55CE7', 'red', 'blue', 'grey', 'yellow', 'green'],
+  color: ['#16D4D2', '#F2DA32', '#58ABF1', '#6A50FF', '#D55CE7', '#ff5100', '#0066ff', '#b9acac', '#e5e91b', '#6fd21e'],
   series: [
     {
       name: '公开招标',
@@ -229,7 +230,7 @@ const option = {
       data: [0, 0, 3, 2, 0, 4]
     },
     {
-      name: '单一采购来源（非公示）',
+      name: '单一来源采购(非公示)',
       type: 'bar',
       stack: '广告',
       label: {

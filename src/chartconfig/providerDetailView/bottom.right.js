@@ -10,6 +10,7 @@ const option = {
   grid: {
     top: '12%',
     bottom: '8%',
+    left: '2%',
     containLabel: true
   },
   legend: {

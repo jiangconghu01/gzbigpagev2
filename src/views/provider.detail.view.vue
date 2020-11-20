@@ -4,10 +4,10 @@
       <h2 class="chart-title"><i>基本</i> <i>信息</i></h2>
       <ul>
         <li class="th">
-          <span class="item" v-for="item in tabledata" :key="item">{{ item.name }}</span>
+          <span class="item" v-for="item in tabledata" :key="item.name">{{ item.name }}</span>
         </li>
         <li class="td">
-          <span class="item" v-for="item in tabledata" :key="item">{{ item.value }}</span>
+          <span class="item" v-for="(item, index) in tabledata" :key="index">{{ item.value }}</span>
         </li>
       </ul>
     </div>
@@ -35,7 +35,7 @@
         <div class="chart-box" id="detail-view-bottom-right"></div>
       </div>
     </div>
-    <!-- <userModalTable :isShowTabe="showTable" :type="tableType" @change="showStatusChange"></userModalTable> -->
+    <userModalTable ref="modal-table" :type="tableType"></userModalTable>
   </div>
 </template>
 
@@ -46,83 +46,202 @@ const getProvider = '/bigScreen/guiz/supplierIndexData/supplierList'
 const getEncode = '/bigScreen/guiz/supplierIndexData/indexGroups'
 //取指标值的接口
 const encodeUrl = '/bigScreen/guiz/supplierIndexData/indexValues'
-import { getDatesParams, getDatesParamsNew } from '../utils/commFun'
+import { getDatesParamsNew } from '../utils/commFun'
 import leftop_config from '../chartconfig/providerDetailView/top.left'
 import centertop_config from '../chartconfig/providerDetailView/top.center'
 import rightop_config from '../chartconfig/providerDetailView/top.right'
 import leftbottom_config from '../chartconfig/providerDetailView/bottom.left'
 import rightbottom_config from '../chartconfig/providerDetailView/bottom.right'
+import userModalTable from '../components/allview/userModalTable.vue'
 export default {
   data() {
     return {
-      tabledata: []
+      tabledata: [],
+      tableType: ''
     }
   },
   created() {},
-  components: {},
+  components: {
+    userModalTable
+  },
   computed: {},
   methods: {
     showModalTable(param) {
-      console.log(param)
+      this.tableType = param
+      this.$refs['modal-table'].showModal()
     },
-    async initPage() {
+    initPage() {
       const date = window.sessionStorage.getItem('selectDate')
       const citycode = window.sessionStorage.getItem('cityCode')
       const businesstype = window.sessionStorage.getItem('buniessType')
-      const providerList = await this.$http.post(getProvider, { accountCode: citycode, monthId: date, ywlx: businesstype })
-      if (!(providerList.data && providerList.data.length > 0)) {
-        this.$message.error('本月暂无供应商！')
-        return
-      }
-      this.providerList = providerList.data
-      this.updatePage()
+      const current_provider = JSON.parse(window.sessionStorage.getItem('keypointProvider'))
+      this.topTable(date, citycode, businesstype, current_provider)
+      this.lefttopchart(date, citycode, businesstype, current_provider)
+      this.centertopchart(date, citycode, businesstype, current_provider)
+      this.righttopchart(date, citycode, businesstype, current_provider)
+      this.leftbottomchart(date, citycode, businesstype, current_provider)
+      this.rightbottomchart(date, citycode, businesstype, current_provider)
     },
-
-    updatePage() {
-      const date = window.sessionStorage.getItem('selectDate')
-      const citycode = window.sessionStorage.getItem('cityCode')
-      const businesstype = window.sessionStorage.getItem('buniessType')
-      this.lefttopchart(date, citycode, businesstype)
-      this.centertopchart(date, citycode, businesstype)
-      this.righttopchart(date, citycode, businesstype)
-      this.leftbottomchart(date, citycode, businesstype)
-      this.rightbottomchart(date, citycode, businesstype)
-    },
-    async lefttopchart(date, citycode, businesstype) {
+    //top图表格请求参数
+    async topTable(date, citycode, businesstype, current_provider) {
       const encodes = await this.$http.post(getEncode, { idxGroup: '0301' })
-      //left-top图表请求参数
-      const providerListRqu = this.providerList.map((ele) => ele.gysbm)
-      const encodetopleft = encodes.data.map((v) => v.idxCde)
-      const p = getDatesParamsNew([date], [citycode], encodetopleft, providerListRqu, businesstype)
-      const leftTopParam = JSON.parse(p)
+      const encodetop = encodes.data.map((val) => val.idxCde)
+      const topParam = JSON.parse(getDatesParamsNew([date], [citycode], encodetop, [current_provider.gysbm], businesstype))
       this.$http
-        .post(encodeUrl, leftTopParam)
+        .post(encodeUrl, topParam)
         .then((resData) => {
-          const providerListRqu = this.providerList.map((ele) => ele.gysjc)
+          const encodelist = encodes.data
+          const gysbm = current_provider.gysbm
+          const gysmc = current_provider.gysmc
+          const tabledata = encodelist.map((val) => {
+            const t = resData.data.find((ele) => ele.idxCode === val.idxCde)
+            val.value = t.idxValue
+            if (val.idxName === '注册资本') {
+              val.name = val.idxName + '(万)'
+            } else if (val.idxName === '实缴资本') {
+              val.name = val.idxName + '(万)'
+            } else if (val.idxName === '资本差异') {
+              val.name = val.idxName + '(%)'
+            } else if (val.idxName === '法律诉讼') {
+              val.name = val.idxName + '(次)'
+            } else if (val.idxName === '不良记录') {
+              val.name = val.idxName + '(笔)'
+            } else {
+              val.name = val.idxName
+            }
+            return val
+          })
+          tabledata.unshift({ name: '供应商名称', value: gysmc })
+          tabledata.unshift({ name: '供应商编码', value: gysbm })
+          this.tabledata = tabledata
+        })
+        .catch((e) => {
+          console.log(e)
+        })
+    },
+    async lefttopchart(date, citycode, businesstype, current_provider) {
+      const encodesres = await this.$http.post(getEncode, { idxGroup: '0302' })
+      const encodes = encodesres.data.map((val) => val.idxCde)
+      const curDate = new Date()
+      const dateArr = [String(curDate.getFullYear() - 2 + '-12'), String(curDate.getFullYear() - 1 + '-12'), date]
+      const param = JSON.parse(getDatesParamsNew(dateArr, [citycode], encodes, [current_provider.gysbm], businesstype))
+      this.$http
+        .post(encodeUrl, param)
+        .then((resData) => {
           const config = leftop_config
-          //纵坐标数据
-          config.yAxis.data = providerListRqu
-          //列账金额
-          const series = resData
-          const series1Data = series.data.filter((val) => val.idxCode === 'ZDGYS_0001')
-          config.series[0].data = series1Data.map((val) => {
-            val.name = val.gysjc
-            val.value = val.idxValue
+          const legend = encodesres.data.map((val) => val.idxName.replace('_合同金额', ''))
+          const serises = encodesres.data.map((val) => {
+            const t = {
+              name: val.idxName.replace('_合同金额', ''),
+              type: 'bar',
+              stack: 'y',
+              data: []
+            }
+            const data = resData.data ? resData.data.filter((ele) => ele.idxCode === val.idxCde) : []
+            const data2 = data.map((e) => {
+              const t = e
+              t.value = (Number(e.idxValue) / 10000).toFixed(2)
+              t.name = e.idxName
+              return t
+            })
+            t.data = data2
+            return t
+          })
+          config.legend.data = legend
+          config.series = serises
+          const box = this.$echarts.init(document.getElementById('detail-view-top-left'))
+          box.setOption(config)
+        })
+        .catch((e) => {
+          console.log(e)
+        })
+    },
+    async centertopchart(date, citycode, businesstype, current_provider) {
+      const encodesres = await this.$http.post(getEncode, { idxGroup: '0303' })
+      const encodes = encodesres.data.map((val) => val.idxCde)
+      const param = JSON.parse(getDatesParamsNew([date], [citycode], encodes, [current_provider.gysbm], businesstype))
+      this.$http
+        .post(encodeUrl, param)
+        .then((resData) => {
+          const config = centertop_config
+          config.series[2].data[0].value = resData.data[0].idxValue
+          const box = this.$echarts.init(document.getElementById('detail-view-top-center'))
+          box.setOption(config)
+        })
+        .catch((e) => {
+          console.log(e)
+        })
+    },
+    async righttopchart(date, citycode, businesstype, current_provider) {
+      const encodesres = await this.$http.post(getEncode, { idxGroup: '0304' })
+      const encodes = encodesres.data.map((val) => val.idxCde)
+      const param = JSON.parse(getDatesParamsNew([date], [citycode], encodes, [current_provider.gysbm], businesstype))
+      this.$http
+        .post(encodeUrl, param)
+        .then((resData) => {
+          const config = rightop_config
+
+          const indicator = encodesres.data.map((val) => {
+            val.name = val.idxName
+            val.max = 1
             return val
           })
-          const series2Data = series.data.filter((val) => val.idxCode === 'ZDGYS_0002')
-          config.series[1].data = series2Data.map((val) => {
-            val.name = val.gysjc
-            val.value = val.idxValue
-            return val
+          const data = resData.data.map((val) => val.idxValue)
+          config.indicator = indicator
+          config.series[0].data[0] = data
+          const box = this.$echarts.init(document.getElementById('detail-view-top-right'))
+          box.setOption(config)
+        })
+        .catch((e) => {
+          console.log(e)
+        })
+    },
+    async leftbottomchart(date, citycode, businesstype, current_provider) {
+      const encodesres = await this.$http.post(getEncode, { idxGroup: '0305' })
+      const encodes = encodesres.data.map((val) => val.idxCde)
+      const param = JSON.parse(getDatesParamsNew([date], [citycode], encodes, [current_provider.gysbm], businesstype))
+      this.$http
+        .post(encodeUrl, param)
+        .then((resData) => {
+          const config = leftbottom_config
+          const data = resData.data.map((val) => (Number(val.idxValue) / 10000).toFixed(2))
+          config.series[0].data = data
+          const box = this.$echarts.init(document.getElementById('detail-view-bottom-left'))
+          box.setOption(config)
+        })
+        .catch((e) => {
+          console.log(e)
+        })
+    },
+    async rightbottomchart(date, citycode, businesstype, current_provider) {
+      const encodesres = await this.$http.post(getEncode, { idxGroup: '0306' })
+      const encodes = encodesres.data.map((val) => val.idxCde)
+      const curDate = new Date()
+      const dateList = Array.from({ length: 12 }, (v, k) => {
+        const d = k + 1 > 9 ? k + 1 : '0' + (k + 1)
+        return curDate.getFullYear() + '-' + d
+      })
+      const param = JSON.parse(getDatesParamsNew(dateList, [citycode], encodes, [current_provider.gysbm], businesstype))
+      this.$http
+        .post(encodeUrl, param)
+        .then((resData) => {
+          const config = rightbottom_config
+          const encodes = encodesres.data
+          const encode1 = encodes[0].idxCde
+          const encode2 = encodes[1].idxCde
+          const data1 = []
+          const data2 = []
+          resData.data.forEach((val) => {
+            if (val.idxCode === encode1) {
+              data1.push({ name: val.idxName, value: (Number(val.idxValue) / 10000).toFixed(2) })
+            }
+            if (val.idxCode === encode2) {
+              data2.push({ name: val.idxName, value: (Number(val.idxValue) / 10000).toFixed(2) })
+            }
           })
-          const series3Data = series.data.filter((val) => val.idxCode === 'ZDGYS_0003')
-          config.series[2].data = series3Data.map((val) => {
-            val.name = val.gysjc
-            val.value = val.idxValue
-            return val
-          })
-          const box = this.$echarts.init(document.getElementById('keypoint-view-top-left'))
+          config.series[0].data = data1
+          config.series[1].data = data2
+          const box = this.$echarts.init(document.getElementById('detail-view-bottom-right'))
           box.setOption(config)
         })
         .catch((e) => {
@@ -130,7 +249,9 @@ export default {
         })
     }
   },
-  mounted() {}
+  mounted() {
+    this.initPage()
+  }
 }
 </script>
 <style lang="scss" scoped>
