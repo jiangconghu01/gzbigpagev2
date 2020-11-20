@@ -108,6 +108,7 @@ export default {
       })
     },
     async lefttopchart(date, citycode, businesstype) {
+      debugger
       const encodes = await this.$http.post(getEncode, { idxGroup: '0201' })
       //left-top图表请求参数
       const providerListRqu = this.providerList.map((ele) => ele.gysbm)
@@ -329,13 +330,13 @@ export default {
   },
   watch: {
     getCityCode(nv, ov) {
-      this.updatePage()
+      this.initPage()
     },
     getSelectDate(nv, ov) {
-      this.updatePage()
+      this.initPage()
     },
     getBuniessType(nv, ov) {
-      this.updatePage()
+      this.initPage()
     }
   },
   mounted() {
