@@ -27,8 +27,8 @@
           <p class="text"><i>新签合同额</i> <i>需关注合同</i></p>
           <p class="number">
             <span class="lum-1"
-              ><i class="num">{{ labelItems[2] && (labelItems[2].idxValue / 10000).toFixed(1) }}</i
-              ><i class="unit">万</i></span
+              ><i class="num">{{ labelItems[2] && (labelItems[2].idxValue / 100000000).toFixed(3) }}</i
+              ><i class="unit">亿</i></span
             >
             <span class="lum-2 active" @click="showModalTable('contract_num')"
               ><i class="num">{{ labelItems[3] && labelItems[3].idxValue }}</i
@@ -80,7 +80,7 @@
       <div class="chart-unit-text">单位：万元</div>
       <div class="chart-box" id="all-view-right-bottom"></div>
     </div>
-    <!-- <userModalTable :isShowTabe="showTable" :type="tableType" @change="showStatusChange"></userModalTable> -->
+    <userModalTable ref="modal-table" :type="tableType" @change="showStatusChange"></userModalTable>
   </div>
 </template>
 
@@ -97,37 +97,123 @@ const getEncode = '/channelBigScreen/modInfoList'
 //取指标值的接口
 const encodeUrl = '/channelBigScreen/modIdxVOList'
 import { getDatesParams, getDatesParamsNew } from '../utils/commFun'
+
+import { GZProvinceCityItem, GZProvinceCityEnum } from '../chartconfig/static'
+import { indexdata } from '../chartconfig/static'
 import leftop_config from '../chartconfig/providerAllView/left.top.pie'
+import lefbottom_config from '../chartconfig/providerAllView/left.bottom.pie'
+import centerbottom_config from '../chartconfig/providerAllView/center.bottom.pillar'
+import righttop_config from '../chartconfig/providerAllView/right.top.pillar'
+import rightbottom_config from '../chartconfig/providerAllView/right.bottom'
+import mapConfig from '../chartconfig/map'
+import gzMapJson from 'echarts/map/json/province/guizhou.json'
+import userModalTable from '../components/allview/userModalTable.vue'
+import { mapGetters, mapMutations } from 'vuex'
 export default {
   data() {
     return {
       labelItems: [],
-      encodeList: []
+      encodeList: indexdata,
+      tableType: ''
     }
   },
   created() {},
-  components: {},
-  computed: {},
+  components: {
+    userModalTable
+  },
+  computed: {
+    ...mapGetters(['getCityCode', 'getSelectDate', 'getBuniessType'])
+  },
   methods: {
+    ...mapMutations(['setCityCode']),
     inintPage() {
-      const businesstype = window.sessionStorage.getItem('buniessType')
+      //请求指标，因为测试环境没有返回正常的数据，直接静态化了
+      //   const businesstype = window.sessionStorage.getItem('buniessType')
+      //   this.$http
+      //     .post(getEncode, { viewCode: '2002', chnlType: typeMap[businesstype] })
+      //     .then((res) => {
+      //       console.log(res)
+      //       this.encodeList = res.data
+      //       this.updatePage()
+      //     })
+      //     .catch((e) => {
+      //       console.log(e)
+      //       this.$message.error('指标加载失败！')
+      //     })
+      this.updateMapJson(this.getCityCode)
+      this.updatePage()
+    },
+    updateMapData(mapBox) {
+      const mapcon = mapBox || this.$echarts.init(document.getElementById('all-view-center-map'))
+      const date = window.sessionStorage.getItem('selectDate')
+      const businesstype = typeMap[window.sessionStorage.getItem('buniessType')]
+      //地图数据
+
+      const mapcncode = this.encodeList[2].idxs.map((ele) => ele.idxCde)
+      const chartCodeMap = this.encodeList[2].chartCode
+      const citycodelist = Object.keys(GZProvinceCityItem)
+      const mapParam = JSON.parse(getDatesParams([date], citycodelist, mapcncode, businesstype, chartCodeMap))
       this.$http
-        .post(getEncode, { viewCode: '2002', chnlType: typeMap[businesstype] })
+        .post(encodeUrl, mapParam)
         .then((res) => {
-          console.log(res)
-          this.encodeList = res.data
-          debugger
-          this.updatePage()
+          const data = res.data.map((val) => {
+            const t = {}
+            t.name = GZProvinceCityEnum[val.accountCode]
+            t.value = val.idxValue
+            t.value2 = val.accountCode
+            return t
+          })
+          mapConfig.series[0].data = data
+          mapcon.setOption(mapConfig)
         })
         .catch((e) => {
-          this.$message.error('指标加载失败！')
+          console.log(e)
+        })
+    },
+    updateMapJson(nv) {
+      if (nv === 'A52') {
+        this.$echarts.registerMap('guizhou', gzMapJson)
+        const mapBox = this.$echarts.init(document.getElementById('all-view-center-map'))
+        mapBox.setOption(mapConfig)
+        this.updateMapData(mapBox)
+        mapBox.off('click')
+        const _this = this
+        mapBox.on('click', function(params) {
+          console.log(params)
+          _this.setCityCode(params.data.value2)
+        })
+        return
+      }
+      this.$http
+        .post('/channel/map/assembleJsonObject', { parentOrgCode: nv })
+        .then((res) => {
+          const resdata = res
+          const mapBox = this.$echarts.init(document.getElementById('all-view-center-map'))
+          mapBox.clear()
+          if (!resdata.features) {
+            this.$message.warning('没有加载到对应地图！')
+          } else {
+            this.$echarts.registerMap('guizhou', resdata)
+            const config = JSON.parse(JSON.stringify(mapConfig))
+            config.series[0].data = []
+            config.series[1].data = []
+            mapBox.setOption(config)
+          }
+        })
+        .catch((e) => {
+          console.log(e)
         })
     },
     updatePage() {
       const date = window.sessionStorage.getItem('selectDate')
       const citycode = window.sessionStorage.getItem('cityCode')
-      const businesstype = window.sessionStorage.getItem('buniessType')
+      const businesstype = typeMap[window.sessionStorage.getItem('buniessType')]
       this.lefttopchart(date, citycode, businesstype)
+      this.topAllLabel(date, citycode, businesstype)
+      this.rightTopChart(date, citycode, businesstype)
+      this.leftBottomChart(date, citycode, businesstype)
+      this.centerBootomChart(date, citycode, businesstype)
+      this.rightBootomChart(date, citycode, businesstype)
     },
     //left-top图表请求数据逻辑
     lefttopchart(date, citycode, businesstype) {
@@ -151,12 +237,141 @@ export default {
           console.log(e)
         })
     },
+    //topAll总体数据
+    topAllLabel(date, citycode, businesstype) {
+      const encondeTopAll = this.encodeList[1].idxs.map((ele) => ele.idxCde)
+      const chartCode = this.encodeList[1].chartCode
+      const paramTopAll = JSON.parse(getDatesParams([date], [citycode], encondeTopAll, businesstype, chartCode))
+      this.$http
+        .post(encodeUrl, paramTopAll)
+        .then((res) => {
+          this.labelItems = res.data
+        })
+        .catch((e) => {
+          console.log(e)
+        })
+    },
+    //rightTop数据
+    rightTopChart(date, citycode, businesstype) {
+      const enconderighttop = this.encodeList[3].idxs.map((ele) => ele.idxCde)
+      const chartCode = this.encodeList[3].chartCode
+      const paramRightTop = JSON.parse(getDatesParams([date], [citycode], enconderighttop, businesstype, chartCode))
+      this.$http
+        .post(encodeUrl, paramRightTop)
+        .then((res) => {
+          const config = righttop_config
+          const label = ['新签合同额', '列账', '付款', '余额']
+          const x = []
+          const y = []
+          res.data.map((val, index) => {
+            if (Number(val.idxOrd) % 2 !== 0) {
+              x.push((Number(val.idxValue) / 10000).toFixed(2))
+            } else {
+              y.push((Number(val.idxValue) / 10000).toFixed(2))
+            }
+          })
+          config.series[0].data = x
+          config.series[1].data = y
+          const box = this.$echarts.init(document.getElementById('all-view-right-top'))
+          box.setOption(config)
+        })
+        .catch((e) => {
+          console.log(e)
+        })
+    },
+    //left-bottom图表请求数据逻辑
+    leftBottomChart(date, citycode, businesstype) {
+      const encondeleftbottom = this.encodeList[4].idxs.map((ele) => ele.idxCde)
+      const chartCode = this.encodeList[4].chartCode
+      const paramLeftBottom = JSON.parse(getDatesParams([date], [citycode], encondeleftbottom, businesstype, chartCode))
+      this.$http
+        .post(encodeUrl, paramLeftBottom)
+        .then((res) => {
+          const label = ['房地产', '汽车', '通讯设备', '土木工程', '软件和技术服务', '批发占比']
+          lefbottom_config.series[0].data = res.data.map((val, index) => {
+            return {
+              name: label[index],
+              value: val.idxValue
+            }
+          })
+          const box = this.$echarts.init(document.getElementById('all-view-left-bottom'))
+          box.setOption(lefbottom_config)
+        })
+        .catch((e) => {
+          console.log(e)
+        })
+    },
+    //center-bootom图表请求数据逻辑
+    centerBootomChart(date, citycode, businesstype) {
+      const encondecenterbottom = this.encodeList[5].idxs.map((ele) => ele.idxCde)
+      const chartCode = this.encodeList[5].chartCode
+      const paramCenterBottom = JSON.parse(getDatesParams([date], [citycode], encondecenterbottom, businesstype, chartCode))
+      this.$http
+        .post(encodeUrl, paramCenterBottom)
+        .then((res) => {
+          const label = ['公开招标', '邀请招标', '单一采购（公示）', '邀请询价', '邀请竞争谈判', '公开比选', '公开询价', '单一采购（非公示）', '公开竞争谈判', '电商采购']
+          centerbottom_config.series[0].data = res.data.map((val, index) => {
+            return {
+              name: label[index],
+              value: (Number(val.idxValue) / 10000).toFixed(2)
+            }
+          })
+          const box = this.$echarts.init(document.getElementById('all-view-center-bottom'))
+          box.setOption(centerbottom_config)
+        })
+        .catch((e) => {
+          console.log(e)
+        })
+    },
+    //right-bootom图表请求数据逻辑
+    rightBootomChart(date, citycode, businesstype) {
+      const encondecenterbottom = this.encodeList[5].idxs.map((ele) => ele.idxCde)
+      const chartCode = this.encodeList[5].chartCode
+      const paramCenterBottom = JSON.parse(getDatesParams([date], [citycode], encondecenterbottom, businesstype, chartCode))
+      this.$http
+        .post(encodeUrl, paramCenterBottom)
+        .then((res) => {
+          const label = Array.from({ length: 12 }, (v, k) => {
+            return k + 1 + '月'
+          })
+          rightbottom_config.series[0].data = res.data.map((val, index) => {
+            return {
+              name: label[index],
+              value: (Number(val.idxValue) / 10000).toFixed(2)
+            }
+          })
+          const box = this.$echarts.init(document.getElementById('all-view-right-bottom'))
+          box.setOption(rightbottom_config)
+        })
+        .catch((e) => {
+          console.log(e)
+        })
+    },
     showModalTable(param) {
-      console.log(param)
+      this.tableType = param
+      this.$refs['modal-table'].showModal()
+    },
+    showStatusChange() {
+      console.log(123)
     },
     toKeyPointPage() {
       const { href } = this.$router.resolve({ name: 'keypointview' })
       window.open(href, '_blank')
+    }
+  },
+  watch: {
+    getCityCode(nv, ov) {
+      console.log(nv)
+      this.updateMapJson(nv)
+      this.updatePage()
+    },
+    getSelectDate(nv, ov) {
+      this.updatePage()
+      this.getCityCode === 'A52' && this.updateMapJson('A52')
+    },
+    getBuniessType(nv, ov) {
+      this.updatePage()
+      this.getCityCode === 'A52' && this.updateMapJson('A52')
     }
   },
   mounted() {
@@ -284,9 +499,10 @@ export default {
       position: relative;
       cursor: pointer;
       &:hover {
-        color: transparent;
-        -webkit-background-clip: text;
-        background-image: -webkit-linear-gradient(bottom, #17d3ba, #afebf7);
+        color: #27dfdf;
+        // color: transparent;
+        // -webkit-background-clip: text;
+        // background-image: -webkit-linear-gradient(bottom, #17d3ba, #afebf7);
       }
       &:hover::after {
         content: '';
@@ -360,6 +576,7 @@ export default {
               color: transparent;
               -webkit-background-clip: text;
               background-image: -webkit-linear-gradient(bottom, #17d3ba, #afebf7);
+              color: #27dfdf;
             }
             &:hover::after {
               content: '';
@@ -373,7 +590,7 @@ export default {
             }
           }
           .num {
-            font-size: 28px;
+            font-size: 26px;
             font-weight: bold;
           }
           .unit {

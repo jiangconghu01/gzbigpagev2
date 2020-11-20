@@ -71,7 +71,7 @@ const LableData = [
   }
 ]
 
-const map: any = {
+const map = {
   title: {
     text: '各地区占比分布',
     textStyle: {
@@ -84,7 +84,7 @@ const map: any = {
   },
   tooltip: {
     trigger: 'item',
-    formatter: function(param: any) {
+    formatter: function(param) {
       if (!param.data || !param.data.name) {
         return ''
       } else {

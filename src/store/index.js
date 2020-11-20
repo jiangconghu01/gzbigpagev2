@@ -37,6 +37,15 @@ export default new Vuex.Store({
     },
     getCurrentPage(state) {
       return state.currntPage
+    },
+    getCityCode(state) {
+      return state.cityCode
+    },
+    getSelectDate(state) {
+      return state.selectDate
+    },
+    getBuniessType(state) {
+      return state.buniessType
     }
   },
   mutations: {

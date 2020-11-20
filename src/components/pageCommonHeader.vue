@@ -5,7 +5,7 @@
         <a-icon slot="suffixIcon" type="caret-down" />
       </a-month-picker>
       <span v-show="storePage !== 'detailview'">
-        <a-select style="width: 120px" :defaultValue="defCity" @change="handleCityChange">
+        <a-select style="width: 120px" :value="citycode" @change="handleCityChange">
           <a-icon slot="suffixIcon" type="caret-down" />
           <a-select-option v-for="(val, key) in cityList" :value="key" :key="key">{{ val }}</a-select-option>
         </a-select>
@@ -38,7 +38,7 @@ import locale from 'ant-design-vue/es/date-picker/locale/zh_CN'
 import 'moment/locale/zh-cn'
 import { GZProvinceCityItem } from '../chartconfig/static'
 import { getFormatDate } from '../utils/commFun'
-import { mapMutations } from 'vuex'
+import { mapMutations, mapGetters } from 'vuex'
 moment.locale('zh-cn')
 let timer = null
 export default {
@@ -49,8 +49,9 @@ export default {
       rightWeek: '',
       titleText: '',
       defDate: window.sessionStorage.getItem('selectDate'),
-      defCity: window.sessionStorage.getItem('cityCode'),
+      //   defCity: window.sessionStorage.getItem('cityCode'),
       defType: window.sessionStorage.getItem('buniessType'),
+      citycode: window.sessionStorage.getItem('cityCode'),
       storePage: 'allview',
       dateFmater: 'YYYY-MM',
       cityList: GZProvinceCityItem,
@@ -60,7 +61,9 @@ export default {
   },
   created() {},
   components: {},
-  computed: {},
+  computed: {
+    ...mapGetters(['getCityCode'])
+  },
   methods: {
     ...mapMutations(['setCityCode', 'setSelectDate', 'setBuniessType']),
     changePage() {
@@ -83,6 +86,11 @@ export default {
       this.rightDate = getFormatDate().date
       this.rightTime = getFormatDate().time
       this.rightWeek = getFormatDate().week
+    }
+  },
+  watch: {
+    getCityCode(nv, ov) {
+      this.citycode = nv
     }
   },
   mounted() {
@@ -269,15 +277,14 @@ export default {
     text-align: center;
     margin-top: 12px;
     h1 {
-      color: transparent;
-      -webkit-background-clip: text;
-      background-image: -webkit-linear-gradient(bottom, #00ffd5, #c1f0fa);
+      //   color: transparent;
+      //   -webkit-background-clip: text;
+      //   background-image: -webkit-linear-gradient(bottom, #00ffd5, #c1f0fa);
+      color: #27dfdf;
       cursor: pointer;
       font-size: 40px;
       font-weight: 900;
       font-family: '黑体', '微软雅黑', '楷体';
-      //   text-shadow: 2px 2px 0px #46edff6e;
-      //   animation: text-pop-up-top 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
     }
   }
   .right-date {

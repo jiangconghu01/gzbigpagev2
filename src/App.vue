@@ -1,6 +1,6 @@
 <template>
   <div id="nav">
-    <a-spin tip="Loading..." :spinning="spinning">
+    <a-spin tip="Loading..." :spinning="getIsLoading">
       <pageContainerBox :config="{ width: 1920, height: 1080, isfix: false }">
         <pageCommonHeader></pageCommonHeader>
         <router-view class="router-page" />
@@ -11,11 +11,15 @@
 <script>
 import pageContainerBox from './components/pageContainerBox.vue'
 import pageCommonHeader from './components/pageCommonHeader.vue'
+import { mapGetters } from 'vuex'
 export default {
   name: 'app',
   components: {
     pageContainerBox,
     pageCommonHeader
+  },
+  computed: {
+    ...mapGetters(['getIsLoading'])
   },
   data() {
     return {

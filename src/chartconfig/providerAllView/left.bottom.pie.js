@@ -26,7 +26,7 @@ const option = {
       label: {
         show: true,
         color: '#fff',
-        formatter: function(param: any) {
+        formatter: function(param) {
           return param.data.name + '\n{b|' + param.data.value * 100 + '%}'
         },
         // formatter: '{per|{d}%} \n {b|{b}}  ',

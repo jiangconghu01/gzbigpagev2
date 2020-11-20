@@ -9,8 +9,204 @@
 </template>
 
 <script>
+const columns1 = [
+  {
+    title: '序号',
+    dataIndex: 'xh',
+    width: 50
+  },
+  {
+    title: '供应商编码',
+    dataIndex: 'gysbm',
+    width: 120
+  },
+  {
+    title: '供应商名称',
+    dataIndex: 'gysmc'
+  },
+  {
+    title: '法律诉讼',
+    dataIndex: 'flss',
+    slots: { customRender: 'redtext' }
+  },
+  {
+    title: '失信信息',
+    dataIndex: 'sxxx'
+  },
+  {
+    title: '行政处罚',
+    dataIndex: 'xzcf'
+  },
+  {
+    title: '经营异常',
+    dataIndex: 'jyyc'
+  }
+]
+const columns2 = [
+  {
+    title: '序号',
+    dataIndex: 'xh',
+    width: 50
+  },
+  {
+    title: '供应商编码',
+    dataIndex: 'gysbm',
+    width: 120
+  },
+  {
+    title: '供应商名称',
+    dataIndex: 'gysmc'
+  },
+  {
+    title: '合同编号',
+    dataIndex: 'contractCode'
+  },
+  {
+    title: '合同名称',
+    dataIndex: 'contractName'
+  },
+  {
+    title: '合同签约金额',
+    dataIndex: 'tradeSum'
+  },
+  {
+    title: '合同累计列账金额',
+    dataIndex: 'lzSum'
+  },
+  {
+    title: '合同累计付款金额',
+    dataIndex: 'fkSum'
+  }
+]
+const columns3 = [
+  {
+    title: '序号',
+    dataIndex: 'xh',
+    width: 50
+  },
+  {
+    title: '供应商编码',
+    dataIndex: 'gysbm',
+    width: 120
+  },
+  {
+    title: '供应商名称',
+    dataIndex: 'gysmc'
+  },
+  {
+    title: '上年列账金额',
+    dataIndex: 'snlzSum'
+  },
+  {
+    title: '本年列账金额',
+    dataIndex: 'bnlzSum',
+    slots: { customRender: 'redtext' }
+  },
+  {
+    title: '本年已付款金额',
+    dataIndex: 'bnfkSum'
+  },
+  {
+    title: '未清偿挂账首笔（最早）时间',
+    dataIndex: 'wqcFirst'
+  }
+]
+const columns4 = [
+  {
+    title: '指标名称',
+    dataIndex: 'idxName'
+  },
+
+  {
+    title: '分值',
+    dataIndex: 'score'
+  },
+  {
+    title: '实际得分',
+    dataIndex: 'actualScore',
+    slots: { customRender: 'redtext' }
+  }
+]
+export default {
+  props: {
+    type: {
+      type: String,
+      default: ''
+    }
+  },
+  data() {
+    return {
+      columns: [],
+      data: [],
+      show: false
+    }
+  },
+  created() {},
+  components: {},
+  computed: {},
+  methods: {
+    showModal() {
+      this.show = true
+    },
+    updateTableData(type) {
+      const date = window.sessionStorage.getItem('selectDate')
+      const citycode = window.sessionStorage.getItem('cityCode')
+
+      if (type === 'provider_num') {
+        this.columns = columns1
+        this.$http
+          .post('/bigScreen/guiz/popup/supplierList', { accountCode: citycode, monthId: date })
+          .then((res) => {
+            this.data = res.data
+          })
+          .catch((e) => {
+            this.$message.error('需要关注供应商数据加载失败！')
+          })
+      }
+      if (type === 'contract_num') {
+        this.columns = columns2
+        this.$http
+          .post('/bigScreen/guiz/popup/contractList', { accountCode: citycode, monthId: date })
+          .then((res) => {
+            this.data = res.data
+          })
+          .catch((e) => {
+            this.$message.error('需要关注合同数据加载失败！')
+          })
+      }
+      if (type === 'bill_num') {
+        this.columns = columns3
+        this.$http
+          .post('/bigScreen/guiz/popup/billList', { accountCode: citycode, monthId: date })
+          .then((res) => {
+            this.data = res.data
+          })
+          .catch((e) => {
+            this.$message.error('需要列账数据加载失败！')
+          })
+      }
+      if (type === 'score_num') {
+        this.columns = columns4
+        this.$http
+          .post('/bigScreen/guiz/popup/scoreList', { accountCode: citycode, monthId: date })
+          .then((res) => {
+            this.data = res.data
+          })
+          .catch((e) => {
+            this.$message.error('分数加载失败！')
+          })
+      }
+    }
+  },
+  watch: {
+    type(nv, ov) {
+      this.updateTableData(nv)
+    }
+  },
+  mounted() {}
+}
 // import { defineComponent, watch, watchEffect, ref, computed, getCurrentInstance, ComponentInternalInstance } from 'vue'
-// import { requestPostData } from '../../http/http'
+// import { this.$http.post } from '../../http/http'
 // import store from '../../store'
 // export default defineComponent({
 //   name: 'userModalTable',
@@ -28,7 +224,7 @@
 //   setup(props, context) {
 //     //this对象
 //     const instance = getCurrentInstance() as ComponentInternalInstance //vue的this实例
-//     const _this = instance.appContext.config.globalProperties //全局对象属性
+//     const this = instance.appContext.config.globalProperties //全局对象属性
 //     //显示弹框
 //     const show = ref(false)
 //     const pageType = ref('')
@@ -172,47 +368,47 @@
 //       const type = pageType.value
 //       data.value = []
 //       if (type === 'provider_num') {
-//         columns.value = columns1
-//         requestPostData('/bigScreen/guiz/popup/supplierList', { accountCode: cityCode.value, monthId: date.value })
+//         this.columns = columns1
+//         this.$http.post('/bigScreen/guiz/popup/supplierList', { accountCode: citycode, monthId: date.value })
 //           .then((res) => {
 //             const resdata: any = res.data
 //             data.value = resdata.data
 //           })
 //           .catch((e) => {
-//             _this.$message.error('需要关注供应商数据加载失败！')
+//             this.$message.error('需要关注供应商数据加载失败！')
 //           })
 //       }
 //       if (type === 'contract_num') {
-//         columns.value = columns2
-//         requestPostData('/bigScreen/guiz/popup/contractList', { accountCode: cityCode.value, monthId: '2020-07' })
+//         this.columns = columns2
+//         this.$http.post('/bigScreen/guiz/popup/contractList', { accountCode: citycode, monthId: '2020-07' })
 //           .then((res) => {
 //             const resdata: any = res.data
 //             data.value = resdata.data
 //           })
 //           .catch((e) => {
-//             _this.$message.error('需要关注合同数据加载失败！')
+//             this.$message.error('需要关注合同数据加载失败！')
 //           })
 //       }
 //       if (type === 'bill_num') {
-//         columns.value = columns3
-//         requestPostData('/bigScreen/guiz/popup/billList', { accountCode: cityCode.value, monthId: '2020-07' })
+//         this.columns = columns3
+//         this.$http.post('/bigScreen/guiz/popup/billList', { accountCode: citycode, monthId: '2020-07' })
 //           .then((res) => {
 //             const resdata: any = res.data
 //             data.value = resdata.data
 //           })
 //           .catch((e) => {
-//             _this.$message.error('需要列账数据加载失败！')
+//             this.$message.error('需要列账数据加载失败！')
 //           })
 //       }
 //       if (type === 'score_num') {
-//         columns.value = columns4
-//         requestPostData('/bigScreen/guiz/popup/scoreList', { accountCode: cityCode.value, monthId: '2020-07' })
+//         this.columns = columns4
+//         this.$http.post('/bigScreen/guiz/popup/scoreList', { accountCode: citycode, monthId: '2020-07' })
 //           .then((res) => {
 //             const resdata: any = res.data
 //             data.value = resdata.data
 //           })
 //           .catch((e) => {
-//             _this.$message.error('分数加载失败！')
+//             this.$message.error('分数加载失败！')
 //           })
 //       }
 //     })
