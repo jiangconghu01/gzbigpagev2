@@ -337,7 +337,8 @@ export default {
           rightbottom_config.series[0].data = res.data.map((val, index) => {
             return {
               name: label[index],
-              value: (Number(val.idxValue) / 10000).toFixed(2)
+              value: (Number(val.idxValue) / 10000).toFixed(2),
+              datalength: 12
             }
           })
           const box = this.$echarts.init(document.getElementById('all-view-right-bottom'))

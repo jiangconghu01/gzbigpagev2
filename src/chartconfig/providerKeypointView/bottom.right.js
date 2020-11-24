@@ -9,7 +9,6 @@ const option = {
       }
     },
     formatter: function(param) {
-      console.log(param)
       return `<div class="test_triangle_border">
          <div class="popup">
           <span><em></em></span>
@@ -22,6 +21,17 @@ const option = {
       </div>
      </div>`
       // return param.data.name + '\n{b|' + param.data.value * 100 + '%'
+    },
+    position: function(pos, params, dom, rect, size) {
+      var obj = {
+        top: pos[1] - size.viewSize[1] / 2
+      }
+      var t = 'left'
+      if (params[0] && params[0].data && params[0].data.datalength) {
+        t = params[0].dataIndex < params[0].data.datalength - 2 ? 'left' : 'right'
+      }
+      obj[t] = t === 'left' ? pos[0] : 0
+      return obj
     }
   },
   legend: {

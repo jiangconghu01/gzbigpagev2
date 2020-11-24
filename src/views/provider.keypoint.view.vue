@@ -71,7 +71,7 @@ export default {
       const businesstype = window.sessionStorage.getItem('buniessType')
       const providerList = await this.$http.post(getProvider, { accountCode: citycode, monthId: date, ywlx: businesstype })
       if (!(providerList.data && providerList.data.length > 0)) {
-        this.$message.error('本月暂无供应商！')
+        this.$message.error('查询暂无供应商！')
         return
       }
       this.providerList = providerList.data
@@ -108,7 +108,6 @@ export default {
       })
     },
     async lefttopchart(date, citycode, businesstype) {
-      debugger
       const encodes = await this.$http.post(getEncode, { idxGroup: '0201' })
       //left-top图表请求参数
       const providerListRqu = this.providerList.map((ele) => ele.gysbm)
@@ -291,6 +290,7 @@ export default {
           config.series[0].data = series1Data.map((val) => {
             val.name = val.gysjc
             val.value = (Number(val.idxValue) / 10000).toFixed(2)
+            val.datalength = providerListRqu.length //tootip判断是不是最后几个数据用
             return val
           })
           const series2Data = series.data.filter((val) => val.idxCode === 'ZDGYS_0018')

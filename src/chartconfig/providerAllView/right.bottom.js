@@ -11,7 +11,10 @@ const option = {
       }
     },
     formatter: function(param) {
-      console.log(param)
+      //   let style = ''
+      //   if (param[0] && param[0].data && param[0].data.datalength) {
+      //     style = param[0].dataIndex < param[0].data.datalength - 3 ? '' : 'transform: rotate(180deg) scaleY(-1)'
+      //   }
       return `<div class="test_triangle_border">
          <div class="popup">
           <span><em></em></span>
@@ -20,6 +23,19 @@ const option = {
       </div>
      </div>`
       // return param.data.name + '\n{b|' + param.data.value * 100 + '%'
+    },
+    position: function(pos, params, dom, rect, size) {
+      var obj = {
+        top: pos[1] - 130
+      }
+      var t = 'left'
+      if (params[0] && params[0].data && params[0].data.datalength) {
+        t = params[0].dataIndex < params[0].data.datalength - 2 ? 'left' : 'right'
+      }
+      obj[t] = t === 'left' ? pos[0] : 0
+      //   const
+
+      return obj
     }
   },
   grid: {

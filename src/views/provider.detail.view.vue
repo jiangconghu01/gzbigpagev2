@@ -98,8 +98,10 @@ export default {
             val.value = t.idxValue
             if (val.idxName === '注册资本') {
               val.name = val.idxName + '(万)'
+              val.value = (t.idxValue / 10000).toFixed(2)
             } else if (val.idxName === '实缴资本') {
               val.name = val.idxName + '(万)'
+              val.value = (t.idxValue / 10000).toFixed(2)
             } else if (val.idxName === '资本差异') {
               val.name = val.idxName + '(%)'
             } else if (val.idxName === '法律诉讼') {
