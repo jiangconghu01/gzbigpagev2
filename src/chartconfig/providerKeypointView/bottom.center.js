@@ -1,6 +1,6 @@
 import { chartFontStyle } from '../static'
 const option = {
-  textStyle: chartFontStyle,
+  textStyle: { ...chartFontStyle, color: '#ffffff' },
   tooltip: {
     trigger: 'axis',
     axisPointer: {
@@ -19,7 +19,7 @@ const option = {
     data: ['公开招标', '邀请招标', '单一来源采购(公示)', '邀请询价', '邀请竞争性谈判', '公开比选', '公开询价', '单一来源采购(非公示)', '公开竞争性谈判', '电商采购']
   },
   grid: {
-    left: '3%',
+    left: '6%',
     right: '4%',
     bottom: 10,
     containLabel: true
@@ -79,12 +79,12 @@ const option = {
       }
     }
   ],
-  color: ['#16D4D2', '#F2DA32', '#58ABF1', '#6A50FF', '#D55CE7', '#ff5100', '#0066ff', '#b9acac', '#e5e91b', '#6fd21e'],
+  color: ['#7211e2', '#ff8800', '#1d86db', '#6A50FF', '#D55CE7', '#FFB800', '#0066ff', '#2F4056', '#fffb00', '#05b36a'],
   series: [
     {
       name: '公开招标',
       type: 'bar',
-      barWidth: '25%',
+      barWidth: '30%',
       stack: '广告',
       label: {
         normal: {
@@ -96,8 +96,8 @@ const option = {
           textStyle: {
             align: 'center',
             baseline: 'middle',
-            fontSize: 14,
-            fontWeight: '400'
+            fontSize: 15,
+            fontWeight: '700'
           }
         }
       },
@@ -117,8 +117,8 @@ const option = {
           textStyle: {
             align: 'center',
             baseline: 'middle',
-            fontSize: 14,
-            fontWeight: '400'
+            fontSize: 15,
+            fontWeight: '700'
           }
         }
       },
@@ -138,8 +138,8 @@ const option = {
           textStyle: {
             align: 'center',
             baseline: 'middle',
-            fontSize: 14,
-            fontWeight: '400'
+            fontSize: 15,
+            fontWeight: '700'
           }
         }
       },
@@ -159,8 +159,8 @@ const option = {
           textStyle: {
             align: 'center',
             baseline: 'middle',
-            fontSize: 14,
-            fontWeight: '400'
+            fontSize: 15,
+            fontWeight: '700'
           }
         }
       },
@@ -180,8 +180,8 @@ const option = {
           textStyle: {
             align: 'center',
             baseline: 'middle',
-            fontSize: 14,
-            fontWeight: '400'
+            fontSize: 15,
+            fontWeight: '700'
           }
         }
       },
@@ -201,8 +201,8 @@ const option = {
           textStyle: {
             align: 'center',
             baseline: 'middle',
-            fontSize: 14,
-            fontWeight: '400'
+            fontSize: 15,
+            fontWeight: '700'
           }
         }
       },
@@ -222,8 +222,8 @@ const option = {
           textStyle: {
             align: 'center',
             baseline: 'middle',
-            fontSize: 14,
-            fontWeight: '400'
+            fontSize: 15,
+            fontWeight: '700'
           }
         }
       },
@@ -243,8 +243,8 @@ const option = {
           textStyle: {
             align: 'center',
             baseline: 'middle',
-            fontSize: 14,
-            fontWeight: '400'
+            fontSize: 15,
+            fontWeight: '700'
           }
         }
       },
@@ -264,8 +264,8 @@ const option = {
           textStyle: {
             align: 'center',
             baseline: 'middle',
-            fontSize: 14,
-            fontWeight: '400'
+            fontSize: 15,
+            fontWeight: '700'
           }
         }
       },
@@ -285,8 +285,8 @@ const option = {
           textStyle: {
             align: 'center',
             baseline: 'middle',
-            fontSize: 14,
-            fontWeight: '400'
+            fontSize: 15,
+            fontWeight: '700'
           }
         }
       },

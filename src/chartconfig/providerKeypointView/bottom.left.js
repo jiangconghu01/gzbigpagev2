@@ -18,7 +18,26 @@ const option = {
     right: '15%',
     bottom: '15%'
   },
-  color: ['#D55CE7', '#6B51FE', '#E85089', '#AD6BE7', '#F5952F', '#58ABF1', '#F2DA32', '#16D4D2'],
+  color: [
+    '#D55CE7',
+    '#6B51FE',
+    '#E85089',
+    '#AD6BE7',
+    '#F5952F',
+    '#58ABF1',
+    '#F2DA32',
+    '#16D4D2',
+    '#16D4D2',
+    '#F2DA32',
+    '#58ABF1',
+    '#6A50FF',
+    '#D55CE7',
+    '#FFB800',
+    '#0066ff',
+    '#2F4056',
+    '#e5e91b',
+    '#6fd21e'
+  ],
   tooltip: {
     trigger: 'item',
     formatter: '{a} <br/>{b} : {d}%'
@@ -27,17 +46,32 @@ const option = {
     {
       name: '统计',
       type: 'pie',
-      radius: [60, 120],
+      radius: [60, 110],
       center: ['50%', '50%'],
       label: {
         show: true,
-        // formatter: function (params: any) {
-        //   return (params.value) * 100 + '%' + '\n' + params.name
+        // formatter: function(params) {
+        // //   return `<p style="color:#17d3ba;">${(params.value * 100).toFixed(1)}%</p>
+        // //     <p style="">${params.name}</p>`
+        //     return params.value * 100 + '%' + '\n' + params.name
         // },
-        formatter: '{per|{d}%} \n {b|{b}}  ',
+        formatter: function(params) {
+          if (params.value == 0 || !params.value) {
+            return ''
+          } else {
+            return ['{a|' + (params.value * 100).toFixed(1) + '%}', '{b|' + params.name + '}'].join('\n')
+          }
+        },
+
         rich: {
+          a: {
+            color: '#17d3ba',
+            lineHeight: 10
+          },
           b: {
-            color: '#C6EBFA'
+            color: '#fff',
+            height: 40,
+            fontSize: 16
           }
         },
         textStyle: {

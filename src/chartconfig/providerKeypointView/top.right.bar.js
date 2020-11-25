@@ -31,7 +31,8 @@ const option = {
     axisLabel: {
       color: '#398FD1',
       fontSize: 16,
-      interval: 0
+      interval: 0,
+      rotate: 30
     },
     axisLine: {
       lineStyle: {

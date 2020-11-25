@@ -27,7 +27,7 @@
           <p class="text"><i>新签合同额</i> <i>需关注合同</i></p>
           <p class="number">
             <span class="lum-1"
-              ><i class="num">{{ labelItems[2] && (labelItems[2].idxValue / 100000000).toFixed(3) }}</i
+              ><i class="num">{{ labelItems[2] && (labelItems[2].idxValue / 100000000).toFixed(2) }}</i
               ><i class="unit">亿</i></span
             >
             <span class="lum-2 active" @click="showModalTable('contract_num')"
@@ -40,11 +40,11 @@
           <p class="text"><i>列账总额</i> <i>需关注列账数</i></p>
           <p class="number">
             <span class="lum-1"
-              ><i class="num">{{ labelItems[4] && (labelItems[4].idxValue / 100000000).toFixed(3) }}</i
+              ><i class="num">{{ labelItems[4] && (labelItems[4].idxValue / 100000000).toFixed(2) }}</i
               ><i class="unit">亿</i></span
             >
             <span class="lum-2 active" @click="showModalTable('bill_num')"
-              ><i class="num">{{ labelItems[5] && (labelItems[5].idxValue / 100000000).toFixed(3) }}</i
+              ><i class="num">{{ labelItems[5] && (labelItems[5].idxValue / 100000000).toFixed(2) }}</i
               ><i class="unit">亿</i></span
             >
           </p>
@@ -53,11 +53,11 @@
           <p class="text"><i>已付金额</i> <i>余额</i></p>
           <p class="number">
             <span class="lum-1"
-              ><i class="num">{{ labelItems[6] && (labelItems[4].idxValue / 100000000).toFixed(3) }}</i
+              ><i class="num">{{ labelItems[6] && (labelItems[6].idxValue / 100000000).toFixed(2) }}</i
               ><i class="unit">亿</i></span
             >
             <span class="lum-2"
-              ><i class="num">{{ labelItems[7] && (labelItems[7].idxValue / 100000000).toFixed(3) }}</i
+              ><i class="num">{{ labelItems[7] && (labelItems[7].idxValue / 100000000).toFixed(2) }}</i
               ><i class="unit">亿</i></span
             >
           </p>
@@ -332,8 +332,9 @@ export default {
         .post(encodeUrl, paramCenterBottom)
         .then((res) => {
           const label = Array.from({ length: 12 }, (v, k) => {
-            return k + 1 + '月'
+            return k + 1 < 10 ? '0' + (k + 1) + '月' : k + 1 + '月'
           })
+          rightbottom_config.xAxis.data = label
           rightbottom_config.series[0].data = res.data.map((val, index) => {
             return {
               name: label[index],
@@ -542,7 +543,7 @@ export default {
           margin-left: 20px;
           margin-top: 25px;
           margin-bottom: 0;
-          font-size: 17px;
+          font-size: 16px;
           letter-spacing: -2px;
           i {
             font-weight: bold;
@@ -591,7 +592,7 @@ export default {
             }
           }
           .num {
-            font-size: 26px;
+            font-size: 25px;
             font-weight: bold;
           }
           .unit {

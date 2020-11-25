@@ -40,15 +40,17 @@ const option = {
   },
   grid: {
     top: '15%',
-    left: '95',
+    // left: '95',
     right: '2%',
-    bottom: '15%'
-    // containLabel: true
+    bottom: '5%',
+    containLabel: true
   },
   xAxis: {
     axisLabel: {
       color: '#398FD1',
       interval: 0,
+      rotate: 35,
+      margin: 20,
       fontSize: 16
     },
     axisLine: {
@@ -129,11 +131,11 @@ const option = {
             [
               {
                 offset: 0,
-                color: 'rgba(150,135,62)'
+                color: '#96873e'
               },
               {
                 offset: 1,
-                color: 'rgba(24,24,77)'
+                color: '#18184d'
               }
             ],
             false

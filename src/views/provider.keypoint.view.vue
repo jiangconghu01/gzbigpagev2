@@ -95,12 +95,18 @@ export default {
         const chartCode = res.data[0].chartCode
         const update2pieParam = JSON.parse(getDatesParams([date], [citycode], update2pie, businesstype, chartCode))
         this.$http.post('/channelBigScreen/modIdxVOList', update2pieParam).then((resData) => {
-          const label = ['房地产', '汽车', '通讯设备', '土木工程', '软件和技术服务', '批发']
+          //   const label = ['房地产', '汽车', '通讯设备', '土木工程', '软件和技术服务', '批发']
           bottomleft_config.series[0].data = resData.data.map((val, index) => {
-            return {
-              name: label[index],
-              value: val.idxValue
-            }
+            // return {
+            //   name: label[index],
+            //   value: val.idxValue
+            // }
+            const names = val.idxName.split('_')
+            val.name = names[0] ? names[0] : val.idxName
+            val.value = val.idxValue
+            val.labelLine = {}
+            val['labelLine']['show'] = !(val.idxValue == 0 || !val.idxValue)
+            return val
           })
           const box = this.$echarts.init(document.getElementById('keypoint-view-bottom-left'))
           box.setOption(bottomleft_config)
@@ -120,7 +126,7 @@ export default {
           const providerListRqu = this.providerList.map((ele) => ele.gysjc)
           const config = leftop_config
           //纵坐标数据
-          config.yAxis.data = providerListRqu
+          config.yAxis[0].data = providerListRqu
           //列账金额
           const series = resData
           const series1Data = series.data.filter((val) => val.idxCode === 'ZDGYS_0001')
@@ -165,25 +171,53 @@ export default {
           //横坐标数据
           config.xAxis.data = providerListRqu
           //法律诉讼
-          const series = resData
-          const series1Data = series.data.filter((val) => val.idxCode === 'ZDGYS_0004')
-          config.series[0].data = series1Data.map((val) => {
-            val.name = val.gysjc
-            val.value = val.idxValue
-            return val
+          //   const series = resData
+          const s1 = []
+          const s2 = []
+          const s3 = []
+          this.providerList.forEach((val) => {
+            resData.data.forEach((ele) => {
+              if (ele.idxCode === 'ZDGYS_0004' && val.gysbm === ele.gysbm) {
+                s1.push({
+                  name: ele.gysmc,
+                  value: ele.idxValue
+                })
+              }
+              if (ele.idxCode === 'ZDGYS_0005' && val.gysbm === ele.gysbm) {
+                s2.push({
+                  name: ele.gysmc,
+                  value: ele.idxValue
+                })
+              }
+              if (ele.idxCode === 'ZDGYS_0006' && val.gysbm === ele.gysbm) {
+                s3.push({
+                  name: ele.gysmc,
+                  value: ele.idxValue
+                })
+              }
+            })
           })
-          const series2Data = series.data.filter((val) => val.idxCode === 'ZDGYS_0005')
-          config.series[1].data = series2Data.map((val) => {
-            val.name = val.gysjc
-            val.value = val.idxValue
-            return val
-          })
-          const series3Data = series.data.filter((val) => val.idxCode === 'ZDGYS_0006')
-          config.series[2].data = series3Data.map((val) => {
-            val.name = val.gysjc
-            val.value = val.idxValue
-            return val
-          })
+          config.series[0].data = s1
+          config.series[1].data = s2
+          config.series[2].data = s3
+          //   const series1Data = series.data.filter((val) => val.idxCode === 'ZDGYS_0004')
+          //   config.series[0].data = series1Data.map((val) => {
+          //     val.name = val.gysjc
+          //     val.value = val.idxValue
+          //     return val
+          //   })
+          //   const series2Data = series.data.filter((val) => val.idxCode === 'ZDGYS_0005')
+          //   config.series[1].data = series2Data.map((val) => {
+          //     val.name = val.gysjc
+          //     val.value = val.idxValue
+          //     return val
+          //   })
+          //   const series3Data = series.data.filter((val) => val.idxCode === 'ZDGYS_0006')
+          //   config.series[2].data = series3Data.map((val) => {
+          //     val.name = val.gysjc
+          //     val.value = val.idxValue
+          //     return val
+          //   })
           const box = this.$echarts.init(document.getElementById('keypoint-view-top-right'))
           box.setOption(config)
           this.handleChartClick(box)
@@ -207,61 +241,137 @@ export default {
           const config = centerbottom_config
           //横坐标数据
           config.xAxis.data = providerListRqu
-          const series = resData
-          const series1Data = series.data.filter((val) => val.idxCode === 'ZDGYS_0007')
-          config.series[0].data = series1Data.map((val) => {
-            val.name = val.gysjc
-            val.value = val.idxValue
-            return val
+          const s1 = []
+          const s2 = []
+          const s3 = []
+          const s4 = []
+          const s5 = []
+          const s6 = []
+          const s7 = []
+          const s8 = []
+          const s9 = []
+          this.providerList.forEach((val) => {
+            resData.data.forEach((ele) => {
+              if (ele.idxCode === 'ZDGYS_0007' && val.gysbm === ele.gysbm) {
+                s1.push({
+                  name: ele.gysmc,
+                  value: ele.idxValue
+                })
+              }
+              if (ele.idxCode === 'ZDGYS_0008' && val.gysbm === ele.gysbm) {
+                s2.push({
+                  name: ele.gysmc,
+                  value: ele.idxValue
+                })
+              }
+              if (ele.idxCode === 'ZDGYS_0009' && val.gysbm === ele.gysbm) {
+                s3.push({
+                  name: ele.gysmc,
+                  value: ele.idxValue
+                })
+              }
+              if (ele.idxCode === 'ZDGYS_0010' && val.gysbm === ele.gysbm) {
+                s4.push({
+                  name: ele.gysmc,
+                  value: ele.idxValue
+                })
+              }
+              if (ele.idxCode === 'ZDGYS_0011' && val.gysbm === ele.gysbm) {
+                s5.push({
+                  name: ele.gysmc,
+                  value: ele.idxValue
+                })
+              }
+              if (ele.idxCode === 'ZDGYS_0012' && val.gysbm === ele.gysbm) {
+                s6.push({
+                  name: ele.gysmc,
+                  value: ele.idxValue
+                })
+              }
+              if (ele.idxCode === 'ZDGYS_0013' && val.gysbm === ele.gysbm) {
+                s7.push({
+                  name: ele.gysmc,
+                  value: ele.idxValue
+                })
+              }
+              if (ele.idxCode === 'ZDGYS_0014' && val.gysbm === ele.gysbm) {
+                s8.push({
+                  name: ele.gysmc,
+                  value: ele.idxValue
+                })
+              }
+              if (ele.idxCode === 'ZDGYS_0015' && val.gysbm === ele.gysbm) {
+                s9.push({
+                  name: ele.gysmc,
+                  value: ele.idxValue
+                })
+              }
+            })
           })
-          const series2Data = series.data.filter((val) => val.idxCode === 'ZDGYS_0008')
-          config.series[1].data = series2Data.map((val) => {
-            val.name = val.gysjc
-            val.value = val.idxValue
-            return val
-          })
-          const series3Data = series.data.filter((val) => val.idxCode === 'ZDGYS_0009')
-          config.series[2].data = series3Data.map((val) => {
-            val.name = val.gysjc
-            val.value = val.idxValue
-            return val
-          })
-          const series4Data = series.data.filter((val) => val.idxCode === 'ZDGYS_0010')
-          config.series[3].data = series4Data.map((val) => {
-            val.name = val.gysjc
-            val.value = val.idxValue
-            return val
-          })
-          const series5Data = series.data.filter((val) => val.idxCode === 'ZDGYS_0011')
-          config.series[4].data = series5Data.map((val) => {
-            val.name = val.gysjc
-            val.value = val.idxValue
-            return val
-          })
-          const series6Data = series.data.filter((val) => val.idxCode === 'ZDGYS_0012')
-          config.series[5].data = series6Data.map((val) => {
-            val.name = val.gysjc
-            val.value = val.idxValue
-            return val
-          })
-          const series7Data = series.data.filter((val) => val.idxCode === 'ZDGYS_0013')
-          config.series[6].data = series7Data.map((val) => {
-            val.name = val.gysjc
-            val.value = val.idxValue
-            return val
-          })
-          const series8Data = series.data.filter((val) => val.idxCode === 'ZDGYS_0014')
-          config.series[7].data = series8Data.map((val) => {
-            val.name = val.gysjc
-            val.value = val.idxValue
-            return val
-          })
-          const series9Data = series.data.filter((val) => val.idxCode === 'ZDGYS_0015')
-          config.series[8].data = series9Data.map((val) => {
-            val.name = val.gysjc
-            val.value = val.idxValue
-            return val
-          })
+          config.series[0].data = s1
+          config.series[1].data = s2
+          config.series[2].data = s3
+          config.series[3].data = s4
+          config.series[4].data = s5
+          config.series[5].data = s6
+          config.series[6].data = s7
+          config.series[7].data = s8
+          config.series[8].data = s9
+          //   const series = resData
+          //   const series1Data = series.data.filter((val) => val.idxCode === 'ZDGYS_0007')
+          //   config.series[0].data = series1Data.map((val) => {
+          //     val.name = val.gysjc
+          //     val.value = val.idxValue
+          //     return val
+          //   })
+          //   const series2Data = series.data.filter((val) => val.idxCode === 'ZDGYS_0008')
+          //   config.series[1].data = series2Data.map((val) => {
+          //     val.name = val.gysjc
+          //     val.value = val.idxValue
+          //     return val
+          //   })
+          //   const series3Data = series.data.filter((val) => val.idxCode === 'ZDGYS_0009')
+          //   config.series[2].data = series3Data.map((val) => {
+          //     val.name = val.gysjc
+          //     val.value = val.idxValue
+          //     return val
+          //   })
+          //   const series4Data = series.data.filter((val) => val.idxCode === 'ZDGYS_0010')
+          //   config.series[3].data = series4Data.map((val) => {
+          //     val.name = val.gysjc
+          //     val.value = val.idxValue
+          //     return val
+          //   })
+          //   const series5Data = series.data.filter((val) => val.idxCode === 'ZDGYS_0011')
+          //   config.series[4].data = series5Data.map((val) => {
+          //     val.name = val.gysjc
+          //     val.value = val.idxValue
+          //     return val
+          //   })
+          //   const series6Data = series.data.filter((val) => val.idxCode === 'ZDGYS_0012')
+          //   config.series[5].data = series6Data.map((val) => {
+          //     val.name = val.gysjc
+          //     val.value = val.idxValue
+          //     return val
+          //   })
+          //   const series7Data = series.data.filter((val) => val.idxCode === 'ZDGYS_0013')
+          //   config.series[6].data = series7Data.map((val) => {
+          //     val.name = val.gysjc
+          //     val.value = val.idxValue
+          //     return val
+          //   })
+          //   const series8Data = series.data.filter((val) => val.idxCode === 'ZDGYS_0014')
+          //   config.series[7].data = series8Data.map((val) => {
+          //     val.name = val.gysjc
+          //     val.value = val.idxValue
+          //     return val
+          //   })
+          //   const series9Data = series.data.filter((val) => val.idxCode === 'ZDGYS_0015')
+          //   config.series[8].data = series9Data.map((val) => {
+          //     val.name = val.gysjc
+          //     val.value = val.idxValue
+          //     return val
+          //   })
           const box = this.$echarts.init(document.getElementById('keypoint-view-bottom-center'))
           box.setOption(config)
           this.handleChartClick(box)

@@ -426,7 +426,7 @@ export default {
   .ant-modal .ant-modal-content {
     background-color: #0e154c;
     .ant-modal-close-icon {
-      color: #333c87;
+      color: #fff;
     }
     .ant-modal-close-x {
       height: 40px;
