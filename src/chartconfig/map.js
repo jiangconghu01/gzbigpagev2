@@ -70,7 +70,7 @@ const LableData = [
     value: [10.21, 1.2]
   }
 ]
-
+import { GZProvinceCityItem } from './static'
 const map = {
   title: {
     text: '各地区占比分布',
@@ -85,34 +85,36 @@ const map = {
   tooltip: {
     trigger: 'item',
     formatter: function(param) {
+      const date = window.sessionStorage.getItem('selectDate')
       if (!param.data || !param.data.name) {
         return ''
       } else {
-        return '<p>' + param.data.name + '</p>' + '<p>占比:' + (param.data.value * 100).toFixed(0) + '%</p>'
+        return '<div class="bg_temp_1 map-tooltip"><p>' + date + '</p>' + '<p>' + param.data.name + '</p>' + '<p>占比:' + (param.data.value * 100).toFixed(1) + '%</p></div>'
       }
     }
   },
-  //   visualMap: {
-  //     type: 'continuous',
-  //     // orient: 'vertical',
-  //     orient: 'horizontal',
-  //     itemWidth: 20,
-  //     itemHeight: 225,
-  //     // text: ['低', '高'],
-  //     text: ['', ''],
-  //     showLabel: true,
-  //     seriesIndex: [0],
-  //     min: 0,
-  //     max: 200,
-  //     inRange: {
-  //       color: ['#E74335', '#E56B09', '#F1C54F', '#03D9D1', '#1D7FC3'].reverse()
-  //     },
-  //     textStyle: {
-  //       color: '#fff'
-  //     },
-  //     x: 0,
-  //     y2: 20
-  //   },
+  visualMap: {
+    type: 'continuous',
+    orient: 'vertical',
+    itemWidth: 15,
+    itemHeight: 120,
+    text: ['高', '低'],
+    showLabel: true,
+    seriesIndex: [0],
+    min: 0,
+    max: 1,
+    inRange: {
+      //   color: ['#1E9FFF', '#51BF30', '#FFB800', '#F56C6C']
+      color: ['#1E9FFF', '#FFB800', '#F56C6C']
+      //   color: ['#F56C6C', '#FFB800', '#51BF30', '#1E9FFF']
+    },
+    textStyle: {
+      color: '#7B93A7',
+      fontSize: 14
+    },
+    x2: '10%',
+    y2: 50
+  },
   geo: {
     id: 1,
     map: 'guizhou',
@@ -177,8 +179,18 @@ const map = {
       itemStyle: {
         normal: {
           label: {
-            show: false,
-            color: 'rgba(255, 255, 255, 0.8)'
+            show: true,
+            color: 'rgba(255, 255, 255, 0.8)',
+
+            fontSize: 16,
+            lineHeight: 25,
+            formatter: function(p) {
+              if (p.data) {
+                return GZProvinceCityItem[p.data.value2] + '\n' + (p.data.value * 100).toFixed(1) + '%'
+              } else {
+                return ''
+              }
+            }
           },
           borderColor: 'rgba(81, 199, 241, 0.87)',
           //   borderWidth: 3,

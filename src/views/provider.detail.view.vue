@@ -103,7 +103,8 @@ export default {
               val.name = val.idxName + '(万)'
               val.value = (t.idxValue / 10000).toFixed(2)
             } else if (val.idxName === '资本差异') {
-              val.name = val.idxName + '(%)'
+              val.name = val.idxName + '(万)'
+              val.value = (t.idxValue / 10000).toFixed(2)
             } else if (val.idxName === '法律诉讼') {
               val.name = val.idxName + '(次)'
             } else if (val.idxName === '不良记录') {
@@ -166,6 +167,28 @@ export default {
         .post(encodeUrl, param)
         .then((resData) => {
           const config = centertop_config
+          const e = this.$echarts
+          config.series[0].axisLine = {
+            lineStyle: {
+              color: [
+                [
+                  resData.data[0].idxValue / 100,
+                  new e.graphic.LinearGradient(0, 0, 1, 0, [
+                    {
+                      offset: 0,
+                      color: '#42C6F7'
+                    },
+                    {
+                      offset: 1,
+                      color: '#D155EF'
+                    }
+                  ])
+                ],
+                [1, '#2E47A4']
+              ],
+              width: 15
+            }
+          }
           config.series[2].data[0].value = resData.data[0].idxValue
           const box = this.$echarts.init(document.getElementById('detail-view-top-center'))
           box.setOption(config)

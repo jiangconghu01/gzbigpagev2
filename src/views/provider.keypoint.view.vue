@@ -93,7 +93,7 @@ export default {
       this.$http.post('/channelBigScreen/modInfoList', { viewCode: '2002', chnlType: typeMap[businesstype] }).then((res) => {
         const update2pie = res.data[0].idxs.map((ele) => ele.idxCde)
         const chartCode = res.data[0].chartCode
-        const update2pieParam = JSON.parse(getDatesParams([date], [citycode], update2pie, businesstype, chartCode))
+        const update2pieParam = JSON.parse(getDatesParams([date], [citycode], update2pie, typeMap[businesstype], chartCode))
         this.$http.post('/channelBigScreen/modIdxVOList', update2pieParam).then((resData) => {
           //   const label = ['房地产', '汽车', '通讯设备', '土木工程', '软件和技术服务', '批发']
           bottomleft_config.series[0].data = resData.data.map((val, index) => {

@@ -14,7 +14,7 @@ const option = {
   },
   grid: {
     top: '15%',
-    left: '20%',
+    left: '25%',
     right: '15%',
     bottom: '15%'
   },
@@ -46,20 +46,40 @@ const option = {
     {
       name: '统计',
       type: 'pie',
-      radius: [60, 110],
+      radius: [50, 80],
       center: ['50%', '50%'],
+      startAngle: 45,
       label: {
         show: true,
+        lineHeight: 20,
+        position: 'outer',
+        alignTo: 'labelLine',
+        margin: 1,
+        color: 'rgba(255,255,255,0.8)',
+        bleedMargin: 50,
+        fontSize: 11,
+        padding: [5, 0, 0, 0],
         // formatter: function(params) {
         // //   return `<p style="color:#17d3ba;">${(params.value * 100).toFixed(1)}%</p>
         // //     <p style="">${params.name}</p>`
         //     return params.value * 100 + '%' + '\n' + params.name
         // },
+        //为0的不显示
         formatter: function(params) {
+          const l = params.name.length
+          const lineNum = ~~(l / 6)
+          const namelist = []
+          for (let index = 0; index <= lineNum; index++) {
+            const n = params.name.substr(index * 6, (index + 1) * 6)
+            n && namelist.push(n)
+          }
+          const t_name_list = namelist.map((v) => {
+            return '{b|' + v + '}'
+          })
           if (params.value == 0 || !params.value) {
             return ''
           } else {
-            return ['{a|' + (params.value * 100).toFixed(1) + '%}', '{b|' + params.name + '}'].join('\n')
+            return ['{a|' + (params.value * 100).toFixed(1) + '%}', ...t_name_list].join('\n')
           }
         },
 
@@ -70,15 +90,16 @@ const option = {
           },
           b: {
             color: '#fff',
-            height: 40,
-            fontSize: 16
+            height: 25,
+            fontSize: 16,
+            align: 'left'
           }
         },
         textStyle: {
           fontSize: 16,
           color: '#4FFFE4'
-        },
-        position: 'outside'
+        }
+        // position: 'outside'
       },
       labelLine: {
         lineStyle: {

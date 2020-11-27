@@ -12,7 +12,7 @@ const option = {
       fontWeight: 'bold'
     }
   },
-  color: ['#D55CE7', '#6B51FE', '#E85089', '#AD6BE7', '#F5952F', '#58ABF1', '#F2DA32', '#16D4D2'],
+  color: ['#D55CE7', '#F2DA32', '#6B51FE', '#16D4D2', '#fffb00', '#AD6BE7', '#F5952F', '#58ABF1'],
   tooltip: {
     trigger: 'item',
     formatter: '{a} <br/>{b} : {c} ({d}%)'
@@ -21,18 +21,43 @@ const option = {
     {
       name: '统计',
       type: 'pie',
-      radius: [60, 120],
+      radius: [50, 90],
       center: ['50%', '50%'],
+      startAngle: 45,
       label: {
         show: true,
         color: '#fff',
-        formatter: function(param) {
-          return param.data.name + '\n{b|' + (param.data.value * 100).toFixed(1) + '%}'
+        // alignTo: 'labelLine',
+        // margin: 1,
+        // bleedMargin: 50,
+        // fontSize: 11,
+        // padding: [5, 0, 0, 0],
+        formatter: function(params) {
+          //   return param.data.name + '\n{b|' + (param.data.value * 100).toFixed(1) + '%}'
+          const l = params.name.length
+          const lineNum = ~~(l / 7)
+          const namelist = []
+          for (let index = 0; index <= lineNum; index++) {
+            const n = params.name.substr(index * 7, (index + 1) * 7)
+            n && namelist.push(n)
+          }
+          const t_name_list = namelist.map((v) => {
+            return '{b|' + v + '}'
+          })
+
+          return ['{a|' + (params.value * 100).toFixed(1) + '%}', ...t_name_list].join('\n')
         },
-        // formatter: '{per|{d}%} \n {b|{b}}  ',
+
         rich: {
+          a: {
+            color: '#17d3ba',
+            lineHeight: 10
+          },
           b: {
-            color: '#4FFFE4'
+            color: '#fff',
+            height: 25,
+            fontSize: 16,
+            align: 'left'
           }
         }
       },

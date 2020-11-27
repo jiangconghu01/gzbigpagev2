@@ -22,7 +22,7 @@
       </span>
     </div>
     <div class="center-title">
-      <h1 @click="changePage">贵州省电信管会系统-供应商{{ titleText }}情况</h1>
+      <h1 @click="changePage">贵州电信智慧核算分析平台-供应商{{ titleText }}情况</h1>
     </div>
     <div class="right-date">
       <i>{{ rightDate }}</i>

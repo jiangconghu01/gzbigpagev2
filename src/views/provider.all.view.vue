@@ -128,20 +128,21 @@ export default {
     ...mapMutations(['setCityCode']),
     inintPage() {
       //请求指标，因为测试环境没有返回正常的数据，直接静态化了
-      //   const businesstype = window.sessionStorage.getItem('buniessType')
-      //   this.$http
-      //     .post(getEncode, { viewCode: '2002', chnlType: typeMap[businesstype] })
-      //     .then((res) => {
-      //       console.log(res)
-      //       this.encodeList = res.data
-      //       this.updatePage()
-      //     })
-      //     .catch((e) => {
-      //       console.log(e)
-      //       this.$message.error('指标加载失败！')
-      //     })
-      this.updateMapJson(this.getCityCode)
-      this.updatePage()
+      const businesstype = window.sessionStorage.getItem('buniessType')
+      this.$http
+        .post(getEncode, { viewCode: '2001', chnlType: typeMap[businesstype] })
+        .then((res) => {
+          console.log(res)
+          this.encodeList = res.data
+          this.updateMapJson(this.getCityCode)
+          this.updatePage()
+        })
+        .catch((e) => {
+          console.log(e)
+          this.$message.error('指标加载失败！')
+        })
+      //   this.updateMapJson(this.getCityCode)
+      //   this.updatePage()
     },
     updateMapData(mapBox) {
       const mapcon = mapBox || this.$echarts.init(document.getElementById('all-view-center-map'))
@@ -182,6 +183,33 @@ export default {
           console.log(params)
           _this.setCityCode(params.data.value2)
         })
+        let count = 0
+        let ishover = false
+
+        mapBox.off('globalout')
+        mapBox.off('mouseover')
+        mapBox.on('globalout', () => {
+          ishover = false
+        })
+        mapBox.on('mouseover', () => {
+          ishover = true
+        })
+        setTimeout(function loop() {
+          setTimeout(loop, 1700)
+          const isGz = window.sessionStorage.getItem('cityCode') === 'A52'
+          if (!isGz || ishover) {
+            return
+          }
+          mapBox.dispatchAction({
+            type: 'showTip',
+            seriesIndex: 0,
+            dataIndex: count
+          })
+          count++
+          if (count >= 8) {
+            count = 0
+          }
+        }, 1700)
         return
       }
       this.$http
@@ -225,8 +253,12 @@ export default {
         .then((res) => {
           const label = ['成本类', '工程采购类', '合作分成类', '其他']
           leftop_config.series[0].data = res.data.map((val, index) => {
+            let name = val.idxName.split('_')[0]
+            if (name) {
+              name = name.replace('占比', '')
+            }
             return {
-              name: val.idxName,
+              name: name,
               value: val.idxValue
             }
           })
@@ -287,10 +319,21 @@ export default {
       this.$http
         .post(encodeUrl, paramLeftBottom)
         .then((res) => {
+          console.log(res)
+
+          const t_data = res.data.slice(0, 6)
+          const d = res.data.filter((val) => val.idxName === '其他')
+
+          t_data.push(d[0])
           const label = ['房地产', '汽车', '通讯设备', '土木工程', '软件和技术服务', '批发占比']
-          lefbottom_config.series[0].data = res.data.map((val, index) => {
+          lefbottom_config.series[0].data = t_data.map((val, index) => {
+            let name = val.idxName.split('_')[0]
+            if (name) {
+              name = name.replace('占比', '')
+            }
+
             return {
-              name: label[index],
+              name: name,
               value: val.idxValue
             }
           })
@@ -615,6 +658,19 @@ export default {
     top: 640px;
     width: 900px;
     height: 300px;
+  }
+}
+</style>
+<style lang="scss">
+.map-tooltip {
+  padding: 5px 15px;
+  min-width: 120px;
+  p {
+    height: 25px;
+    line-height: 25px;
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 5px;
   }
 }
 </style>
