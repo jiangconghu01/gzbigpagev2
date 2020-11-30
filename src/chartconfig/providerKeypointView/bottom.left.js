@@ -70,7 +70,7 @@ const option = {
           const lineNum = ~~(l / 6)
           const namelist = []
           for (let index = 0; index <= lineNum; index++) {
-            const n = params.name.substr(index * 6, (index + 1) * 6)
+            const n = params.name.substr(index * 6, 6)
             n && namelist.push(n)
           }
           const t_name_list = namelist.map((v) => {
@@ -90,8 +90,8 @@ const option = {
           },
           b: {
             color: '#fff',
-            height: 25,
-            fontSize: 16,
+            height: 20,
+            fontSize: 14,
             align: 'left'
           }
         },

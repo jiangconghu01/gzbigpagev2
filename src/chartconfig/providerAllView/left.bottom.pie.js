@@ -27,18 +27,19 @@ const option = {
       label: {
         show: true,
         color: '#fff',
-        // alignTo: 'labelLine',
-        // margin: 1,
+        position: 'outer',
+        alignTo: 'labelLine',
+        margin: 1,
         // bleedMargin: 50,
         // fontSize: 11,
-        // padding: [5, 0, 0, 0],
+        padding: [5, 0, 0, 0],
         formatter: function(params) {
-          //   return param.data.name + '\n{b|' + (param.data.value * 100).toFixed(1) + '%}'
+          //   return params.data.name + '\n{b|' + (params.data.value * 100).toFixed(1) + '%}'
           const l = params.name.length
           const lineNum = ~~(l / 7)
           const namelist = []
           for (let index = 0; index <= lineNum; index++) {
-            const n = params.name.substr(index * 7, (index + 1) * 7)
+            const n = params.name.substr(index * 7, 7)
             n && namelist.push(n)
           }
           const t_name_list = namelist.map((v) => {
@@ -55,8 +56,8 @@ const option = {
           },
           b: {
             color: '#fff',
-            height: 25,
-            fontSize: 16,
+            height: 20,
+            fontSize: 14,
             align: 'left'
           }
         }

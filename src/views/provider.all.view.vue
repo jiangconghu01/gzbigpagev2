@@ -145,6 +145,7 @@ export default {
       //   this.updatePage()
     },
     updateMapData(mapBox) {
+      debugger
       const mapcon = mapBox || this.$echarts.init(document.getElementById('all-view-center-map'))
       const date = window.sessionStorage.getItem('selectDate')
       const businesstype = typeMap[window.sessionStorage.getItem('buniessType')]
@@ -152,11 +153,19 @@ export default {
 
       const mapcncode = this.encodeList[2].idxs.map((ele) => ele.idxCde)
       const chartCodeMap = this.encodeList[2].chartCode
+
       const citycodelist = Object.keys(GZProvinceCityItem)
       const mapParam = JSON.parse(getDatesParams([date], citycodelist, mapcncode, businesstype, chartCodeMap))
       this.$http
         .post(encodeUrl, mapParam)
         .then((res) => {
+          let max = 0
+          let min = 0
+          res.data.forEach((val) => {
+            const v = Number(val.idxValue) ? Number(val.idxValue).toFixed(3) : 0
+            max = v > max ? v : max
+            min = v < min ? v : min
+          })
           const data = res.data.map((val) => {
             const t = {}
             t.name = GZProvinceCityEnum[val.accountCode]
@@ -164,6 +173,9 @@ export default {
             t.value2 = val.accountCode
             return t
           })
+          console.log('max', max, min)
+          mapConfig.visualMap.max = max
+          mapConfig.visualMap.min = min
           mapConfig.series[0].data = data
           mapcon.setOption(mapConfig)
         })
@@ -172,10 +184,11 @@ export default {
         })
     },
     updateMapJson(nv) {
+      console.log(nv)
       if (nv === 'A52') {
         this.$echarts.registerMap('guizhou', gzMapJson)
         const mapBox = this.$echarts.init(document.getElementById('all-view-center-map'))
-        mapBox.setOption(mapConfig)
+        // mapBox.setOption(mapConfig)
         this.updateMapData(mapBox)
         mapBox.off('click')
         const _this = this
@@ -195,7 +208,7 @@ export default {
           ishover = true
         })
         setTimeout(function loop() {
-          setTimeout(loop, 1700)
+          setTimeout(loop, 4500)
           const isGz = window.sessionStorage.getItem('cityCode') === 'A52'
           if (!isGz || ishover) {
             return
@@ -209,7 +222,7 @@ export default {
           if (count >= 8) {
             count = 0
           }
-        }, 1700)
+        }, 4500)
         return
       }
       this.$http
@@ -412,6 +425,7 @@ export default {
     },
     getSelectDate(nv, ov) {
       this.updatePage()
+      console.log('tttttttt', this.getCityCode)
       this.getCityCode === 'A52' && this.updateMapJson('A52')
     },
     getBuniessType(nv, ov) {

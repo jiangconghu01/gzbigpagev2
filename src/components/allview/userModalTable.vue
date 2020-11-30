@@ -443,6 +443,10 @@ export default {
   .ant-table-content {
     .ant-table-header {
       background-color: #243082;
+      overflow: hidden;
+      .ant-table-thead {
+        overflow: hidden;
+      }
     }
     ant-table-body .ant-table-body {
       background-color: #243082;

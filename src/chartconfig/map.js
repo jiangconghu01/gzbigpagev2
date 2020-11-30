@@ -112,7 +112,6 @@ const map = {
       color: '#7B93A7',
       fontSize: 14
     },
-    x2: '10%',
     y2: 50
   },
   geo: {
