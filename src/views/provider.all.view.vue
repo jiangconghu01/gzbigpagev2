@@ -44,8 +44,8 @@
               ><i class="unit">亿</i></span
             >
             <span class="lum-2 active" @click="showModalTable('bill_num')"
-              ><i class="num">{{ labelItems[5] && (labelItems[5].idxValue / 100000000).toFixed(2) }}</i
-              ><i class="unit">亿</i></span
+              ><i class="num">{{ labelItems[5] && (labelItems[5].idxValue > 9999 ? (labelItems[5].idxValue / 10000).toFixed(1) : labelItems[5].idxValue) }}</i
+              ><i class="unit">{{ labelItems[5] && (labelItems[5].idxValue > 9999 ? '万' : '') }}个</i></span
             >
           </p>
         </li>
@@ -109,6 +109,7 @@ import mapConfig from '../chartconfig/map'
 import gzMapJson from 'echarts/map/json/province/guizhou.json'
 import userModalTable from '../components/allview/userModalTable.vue'
 import { mapGetters, mapMutations } from 'vuex'
+let timer = null
 export default {
   data() {
     return {
@@ -145,7 +146,6 @@ export default {
       //   this.updatePage()
     },
     updateMapData(mapBox) {
-      debugger
       const mapcon = mapBox || this.$echarts.init(document.getElementById('all-view-center-map'))
       const date = window.sessionStorage.getItem('selectDate')
       const businesstype = typeMap[window.sessionStorage.getItem('buniessType')]
@@ -168,14 +168,24 @@ export default {
           })
           const data = res.data.map((val) => {
             const t = {}
+            const v = Number(val.idxValue) ? Number(val.idxValue).toFixed(3) : 0
             t.name = GZProvinceCityEnum[val.accountCode]
-            t.value = val.idxValue
+            t.value = v
             t.value2 = val.accountCode
             return t
           })
           console.log('max', max, min)
-          mapConfig.visualMap.max = max
-          mapConfig.visualMap.min = min
+          if (max === 0 && min === 0) {
+            mapConfig.visualMap.max = 1
+            mapConfig.visualMap.min = 0
+          } else if (min < -0.25) {
+            mapConfig.visualMap.max = 0.5
+            mapConfig.visualMap.min = -0.5
+          } else {
+            mapConfig.visualMap.max = 0.5
+            mapConfig.visualMap.min = 0
+          }
+
           mapConfig.series[0].data = data
           mapcon.setOption(mapConfig)
         })
@@ -207,8 +217,9 @@ export default {
         mapBox.on('mouseover', () => {
           ishover = true
         })
-        setTimeout(function loop() {
-          setTimeout(loop, 4500)
+        timer && clearInterval(timer)
+        timer = setTimeout(function loop() {
+          timer = setTimeout(loop, 4500)
           const isGz = window.sessionStorage.getItem('cityCode') === 'A52'
           if (!isGz || ishover) {
             return
@@ -249,7 +260,7 @@ export default {
       const date = window.sessionStorage.getItem('selectDate')
       const citycode = window.sessionStorage.getItem('cityCode')
       const businesstype = typeMap[window.sessionStorage.getItem('buniessType')]
-      this.lefttopchart(date, citycode, businesstype)
+      businesstype === '00' && this.lefttopchart(date, citycode, businesstype)
       this.topAllLabel(date, citycode, businesstype)
       this.rightTopChart(date, citycode, businesstype)
       this.leftBottomChart(date, citycode, businesstype)
@@ -408,6 +419,7 @@ export default {
     showModalTable(param) {
       this.tableType = param
       this.$refs['modal-table'].showModal()
+      this.$refs['modal-table'].updateTableData(param)
     },
     showStatusChange() {
       console.log(123)
@@ -429,8 +441,7 @@ export default {
       this.getCityCode === 'A52' && this.updateMapJson('A52')
     },
     getBuniessType(nv, ov) {
-      this.updatePage()
-      this.getCityCode === 'A52' && this.updateMapJson('A52')
+      this.inintPage()
     }
   },
   mounted() {

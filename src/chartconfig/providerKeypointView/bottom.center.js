@@ -13,6 +13,7 @@ const option = {
       color: '#C7EBF9',
       fontSize: 16
     },
+    left: 5,
     right: 90,
     itemWidth: 15,
     itemHeight: 15,
@@ -125,7 +126,7 @@ const option = {
       data: [2, 0, 0, 0, 5, 0]
     },
     {
-      name: '单一采购来源（公示）',
+      name: '单一来源采购(公示)',
       type: 'bar',
       stack: '广告',
       label: {

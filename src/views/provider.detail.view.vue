@@ -53,6 +53,7 @@ import rightop_config from '../chartconfig/providerDetailView/top.right'
 import leftbottom_config from '../chartconfig/providerDetailView/bottom.left'
 import rightbottom_config from '../chartconfig/providerDetailView/bottom.right'
 import userModalTable from '../components/allview/userModalTable.vue'
+import { mapGetters } from 'vuex'
 export default {
   data() {
     return {
@@ -60,15 +61,20 @@ export default {
       tableType: ''
     }
   },
-  created() {},
+  created() {
+    this.$store.commit('setCurrentPage', 'detailview')
+  },
   components: {
     userModalTable
   },
-  computed: {},
+  computed: {
+    ...mapGetters(['getSelectDate'])
+  },
   methods: {
     showModalTable(param) {
       this.tableType = param
       this.$refs['modal-table'].showModal()
+      this.$refs['modal-table'].updateTableData(param)
     },
     initPage() {
       const date = window.sessionStorage.getItem('selectDate')
@@ -107,8 +113,6 @@ export default {
               val.value = (t.idxValue / 10000).toFixed(2)
             } else if (val.idxName === '法律诉讼') {
               val.name = val.idxName + '(次)'
-            } else if (val.idxName === '不良记录') {
-              val.name = val.idxName + '(笔)'
             } else {
               val.name = val.idxName
             }
@@ -126,7 +130,8 @@ export default {
       const encodesres = await this.$http.post(getEncode, { idxGroup: '0302' })
       const encodes = encodesres.data.map((val) => val.idxCde)
       const curDate = new Date()
-      const dateArr = [String(curDate.getFullYear() - 2 + '-12'), String(curDate.getFullYear() - 1 + '-12'), date]
+      const dateY = date.split('-')[0]
+      const dateArr = [String(dateY - 2 + '-12'), String(dateY - 1 + '-12'), date]
       const param = JSON.parse(getDatesParamsNew(dateArr, [citycode], encodes, [current_provider.gysbm], businesstype))
       this.$http
         .post(encodeUrl, param)
@@ -241,10 +246,10 @@ export default {
     async rightbottomchart(date, citycode, businesstype, current_provider) {
       const encodesres = await this.$http.post(getEncode, { idxGroup: '0306' })
       const encodes = encodesres.data.map((val) => val.idxCde)
-      const curDate = new Date()
+      //   const curDate = new Date()
       const dateList = Array.from({ length: 12 }, (v, k) => {
         const d = k + 1 > 9 ? k + 1 : '0' + (k + 1)
-        return curDate.getFullYear() + '-' + d
+        return date.split('-')[0] + '-' + d
       })
       const param = JSON.parse(getDatesParamsNew(dateList, [citycode], encodes, [current_provider.gysbm], businesstype))
       this.$http
@@ -272,6 +277,11 @@ export default {
         .catch((e) => {
           console.log(e)
         })
+    }
+  },
+  watch: {
+    getSelectDate(nv, ov) {
+      this.initPage()
     }
   },
   mounted() {

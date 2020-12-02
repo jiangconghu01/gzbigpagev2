@@ -1,16 +1,16 @@
 <template>
   <div class="page-header">
     <div class="left-select">
-      <a-month-picker v-show="storePage !== 'detailview'" @change="handleDateChange" placeholder="选择年月" :locale="zhLocale" :defaultValue="moment(defDate, dateFmater)">
+      <a-month-picker @change="handleDateChange" placeholder="选择年月" :locale="zhLocale" :defaultValue="moment(defDate, dateFmater)">
         <a-icon slot="suffixIcon" type="caret-down" />
       </a-month-picker>
-      <span v-show="storePage !== 'detailview'">
+      <span v-show="getCurrentPage !== 'detailview'">
         <a-select style="width: 120px" :value="citycode" @change="handleCityChange">
           <a-icon slot="suffixIcon" type="caret-down" />
           <a-select-option v-for="(val, key) in cityList" :value="key" :key="key">{{ val }}</a-select-option>
         </a-select>
       </span>
-      <span v-show="storePage !== 'detailview'">
+      <span v-show="getCurrentPage !== 'detailview'">
         <a-select style="width: 120px" :defaultValue="defType" @change="handleTypeChange">
           <a-icon slot="suffixIcon" type="caret-down" />
           <a-select-option value="all">全部业务</a-select-option>
@@ -52,7 +52,7 @@ export default {
       //   defCity: window.sessionStorage.getItem('cityCode'),
       defType: window.sessionStorage.getItem('buniessType'),
       citycode: window.sessionStorage.getItem('cityCode'),
-      storePage: this.$route.name,
+      //   storePage: this.$route.name,
       dateFmater: 'YYYY-MM',
       cityList: GZProvinceCityItem,
       zhLocale: locale,
@@ -62,7 +62,7 @@ export default {
   created() {},
   components: {},
   computed: {
-    ...mapGetters(['getCityCode'])
+    ...mapGetters(['getCityCode', 'getCurrentPage'])
   },
   methods: {
     ...mapMutations(['setCityCode', 'setSelectDate', 'setBuniessType']),
@@ -95,6 +95,7 @@ export default {
   },
   mounted() {
     timer = window.setInterval(this.updateDate, 1000)
+    console.log(this.$router.history.current)
   },
   destroyed() {
     window.clearInterval(timer)

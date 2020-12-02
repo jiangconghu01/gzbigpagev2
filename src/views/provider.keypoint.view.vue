@@ -58,13 +58,15 @@ export default {
       providerList: []
     }
   },
-  created() {},
+  created() {
+    this.setCurrentPage('keypointview')
+  },
   components: {},
   computed: {
     ...mapGetters(['getCityCode', 'getSelectDate', 'getBuniessType'])
   },
   methods: {
-    ...mapMutations(['setKeypointProvider']),
+    ...mapMutations(['setKeypointProvider', 'setCurrentPage']),
     async initPage() {
       const date = window.sessionStorage.getItem('selectDate')
       const citycode = window.sessionStorage.getItem('cityCode')
@@ -250,6 +252,7 @@ export default {
           const s7 = []
           const s8 = []
           const s9 = []
+          const s10 = []
           this.providerList.forEach((val) => {
             resData.data.forEach((ele) => {
               if (ele.idxCode === 'ZDGYS_0007' && val.gysbm === ele.gysbm) {
@@ -306,6 +309,12 @@ export default {
                   value: ele.idxValue
                 })
               }
+              if (ele.idxCode === 'ZDGYS_0016' && val.gysbm === ele.gysbm) {
+                s10.push({
+                  name: ele.gysmc,
+                  value: ele.idxValue
+                })
+              }
             })
           })
           config.series[0].data = s1
@@ -317,6 +326,7 @@ export default {
           config.series[6].data = s7
           config.series[7].data = s8
           config.series[8].data = s9
+          config.series[9].data = s10
           //   const series = resData
           //   const series1Data = series.data.filter((val) => val.idxCode === 'ZDGYS_0007')
           //   config.series[0].data = series1Data.map((val) => {

@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-const PageType = 'allview' || 'detailview' || 'keypointview'
+// const PageType = 'allview' || 'detailview' || 'keypointview'
 const curDate = new Date()
 const defDate =
   window.sessionStorage.getItem('selectDate') ||
