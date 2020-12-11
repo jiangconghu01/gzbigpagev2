@@ -376,13 +376,16 @@ export default {
       this.$http
         .post(encodeUrl, paramCenterBottom)
         .then((res) => {
-          const label = ['公开招标', '邀请招标', '单一采购（公示）', '邀请询价', '邀请竞争谈判', '公开比选', '公开询价', '单一采购（非公示）', '公开竞争谈判', '电商采购']
+          //   const label = ['公开招标', '邀请招标', '单一采购（公示）', '邀请询价', '邀请竞争谈判', '公开比选', '公开询价', '单一采购（非公示）', '公开竞争谈判', '电商采购']
+          const label = []
           centerbottom_config.series[0].data = res.data.map((val, index) => {
+            label.push(val.idxName)
             return {
-              name: label[index],
+              name: val.idxName,
               value: (Number(val.idxValue) / 10000).toFixed(2)
             }
           })
+          centerbottom_config.xAxis.data = label
           const box = this.$echarts.init(document.getElementById('all-view-center-bottom'))
           box.setOption(centerbottom_config)
         })
@@ -392,9 +395,13 @@ export default {
     },
     //right-bootom图表请求数据逻辑
     rightBootomChart(date, citycode, businesstype) {
-      const encondecenterbottom = this.encodeList[5].idxs.map((ele) => ele.idxCde)
-      const chartCode = this.encodeList[5].chartCode
-      const paramCenterBottom = JSON.parse(getDatesParams([date], [citycode], encondecenterbottom, businesstype, chartCode))
+      const encondecenterbottom = this.encodeList[6].idxs.map((ele) => ele.idxCde)
+      const chartCode = this.encodeList[6].chartCode
+      const dateList = Array.from({ length: 12 }, (v, k) => {
+        const d = k + 1 > 9 ? k + 1 : '0' + (k + 1)
+        return date.split('-')[0] + '-' + d
+      })
+      const paramCenterBottom = JSON.parse(getDatesParams(dateList, [citycode], encondecenterbottom, businesstype, chartCode))
       this.$http
         .post(encodeUrl, paramCenterBottom)
         .then((res) => {

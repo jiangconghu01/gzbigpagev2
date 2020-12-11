@@ -11,7 +11,8 @@ const option = {
     top: '30',
     left: '85',
     right: '5%',
-    bottom: '18%'
+    bottom: '2%',
+    containLabel: true
   },
   color: ['#16D4D2'],
   xAxis: {
@@ -20,6 +21,7 @@ const option = {
     },
     axisLabel: {
       interval: 0,
+      rotate: 30,
       textStyle: {
         color: '#388DD3',
         fontSize: 17
