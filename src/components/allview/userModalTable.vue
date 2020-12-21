@@ -32,23 +32,13 @@ const columns1 = [
     dataIndex: 'gysmc'
   },
   {
-    title: '法律诉讼',
-    dataIndex: 'flss',
-    scopedSlots: { customRender: 'redtext' }
-  },
-  {
     title: '失信信息',
     dataIndex: 'sxxx',
     scopedSlots: { customRender: 'redtext' }
   },
   {
-    title: '行政处罚',
-    dataIndex: 'xzcf',
-    scopedSlots: { customRender: 'redtext' }
-  },
-  {
-    title: '经营异常',
-    dataIndex: 'jyyc',
+    title: '被执行人',
+    dataIndex: 'bzxr',
     scopedSlots: { customRender: 'redtext' }
   }
 ]
